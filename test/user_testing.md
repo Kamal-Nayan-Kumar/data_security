@@ -3,25 +3,40 @@
 This guide is for the **User** laptop. You will act as the consumer of a software package published by the Developer laptop. The system will cryptographically guarantee you are installing exactly what the developer created.
 
 ## 1. Install the CLI
-Download the latest `vget` CLI binary for your operating system from the [Releases page](https://github.com/Kamal-Nayan-Kumar/data_security/releases) (once the GitHub Action is finished).
 
-Extract it and make it executable:
+If you haven't triggered a GitHub Release yet, you can build the CLI directly from source:
+
 ```bash
-# On Mac/Linux
-chmod +x vget
-export VGET="./vget"
+# Clone your repository
+git clone https://github.com/Kamal-Nayan-Kumar/data_security.git
+cd data_security
 
-# Tell the CLI where the production backend is hosted:
-export VGET_API_URL="https://your-backend-url.onrender.com"
+# Build the CLI
+cargo build --release -p cli
+export VGET="./target/release/vget"
 ```
 
-## 2. Browse the Package Repository
-Open the **Vercel** or **Netlify** URL where your Frontend React app is hosted. Search for the package the developer just published.
+*(Alternatively, if you pushed a `v1.0.0` tag to GitHub, download the binary from the [Releases page](https://github.com/Kamal-Nayan-Kumar/data_security/releases), extract it, and use `export VGET="./vget"`).*
 
-You should see a UI showing `my-awesome-app` and its version `1.0.0`.
+## 2. Connect to the Cloud Backend
 
-## 3. Securely Install the Package
-The user needs to run the `install` command.
+You must tell the CLI to talk to your live deployed backend instead of `localhost`:
+
+```bash
+export VGET_API_URL="https://data-security-backend.onrender.com"
+```
+
+## 3. Browse the Package Repository
+
+Open your deployed **Vercel** Frontend URL in your browser:
+**https://data-security-frontend-git-main-kamal-nayan-kumars-projects.vercel.app**
+*(or whatever custom domain you configured).*
+
+Search for the package the developer just published (e.g., `my-awesome-app`). You should see it listed with version `1.0.0`!
+
+## 4. Securely Install the Package
+
+The user needs to run the `install` command using the CLI.
 
 ```bash
 $VGET install my-awesome-app
@@ -34,9 +49,11 @@ $VGET install my-awesome-app
 4. It compares the checksum to the expected checksum and verifies the `Ed25519` signature with the public key.
 5. If **either check fails**, the CLI will panic and refuse to extract the package.
 
-## 4. Verify Installation
+## 5. Verify Installation
+
 ```bash
 ls -la ./installed/my-awesome-app/1.0.0
 cat ./installed/my-awesome-app/1.0.0/index.js
 ```
-The file should exist exactly as the developer published it.
+
+The file should exist exactly as the developer published it, guaranteeing no man-in-the-middle tampering occurred during download!
