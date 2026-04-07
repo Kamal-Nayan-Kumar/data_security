@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT pv.file_path\n        FROM package_versions pv\n        INNER JOIN packages p ON p.id = pv.package_id\n        WHERE p.name = $1 AND pv.version = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "file_path",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "34e525835b9efb903c1931896693300c2562f098f27d0c3eb2369b7e1df43239"
+}

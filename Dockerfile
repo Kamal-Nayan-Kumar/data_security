@@ -5,6 +5,7 @@ COPY ./cli/ /app/cli/
 COPY ./Cargo.toml /app/Cargo.toml
 COPY ./Cargo.lock /app/Cargo.lock
 
+ENV SQLX_OFFLINE=true
 RUN cd backend && cargo build --release
 
 FROM python:3.12-slim
