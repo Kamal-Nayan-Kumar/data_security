@@ -1,0 +1,30 @@
+# Rust
+/target/
+/backend/target/
+/cli/target/
+**/*.rs.bk
+
+# Node (if a frontend is added later)
+node_modules/
+
+# Environment Variables
+.env
+*.env
+.env.*
+
+# OS
+.DS_Store
+
+# VaultGet specific runtime artifacts
+/uploads/
+/downloads/
+/installed/
+/.vget/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+# Frontend
+frontend/dist/

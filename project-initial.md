@@ -1,0 +1,11 @@
+- I want to make something like apt repo like in ubuntu we get
+- I want to make CLI tool for both users and develper and one frontend where people can see the repo : softwares and their description and along with installation commands
+- on user side it only allows to download the package and update them, delete them and ofcourse authentication things. we can ues public-private key
+- on developer side it allows to verify themselves using public-private , they can push code from terminal, and make changes to them, only developer can make changes to code.
+- i want to use ci cd pipeline also.
+- malicious code check and security check for code -> one member have done this i think he claimed to in folder name "other member work" check it and if ok can rename
+- so this is group project: so i want to divide like this - Me (CLI), 2nd(code check), 3rd(CI/CD), 4th)(frontend)
+- At last after all project we done here we can make other three zip file and sent them to team member they can download and then push from there account to the repo on their branch so contribution can be seen when merged
+- this is project of data security and privacy so most focus on it. 
+- make project presentable and explainable and importantly useful.
+ 
