@@ -2,21 +2,18 @@
 
 This guide is for the **User** laptop. You will act as the consumer of a software package published by the Developer laptop. The system will cryptographically guarantee you are installing exactly what the developer created.
 
-## 1. Install the CLI
+## 1. Install the CLI (Binary Release)
 
-If you haven't triggered a GitHub Release yet, you can build the CLI directly from source:
+Download the pre-compiled binary for your operating system from the GitHub Releases page:
+[https://github.com/Kamal-Nayan-Kumar/data_security/releases/latest](https://github.com/Kamal-Nayan-Kumar/data_security/releases/latest)
+
+Extract the downloaded file, open your terminal in that folder, and make it executable:
 
 ```bash
-# Clone your repository
-git clone https://github.com/Kamal-Nayan-Kumar/data_security.git
-cd data_security
-
-# Build the CLI
-cargo build --release -p cli
-export VGET="./target/release/vget"
+# On Mac/Linux (Replace with your actual downloaded file name)
+chmod +x vget-linux-amd64
+export VGET="./vget-linux-amd64"
 ```
-
-*(Alternatively, if you pushed a `v1.0.0` tag to GitHub, download the binary from the [Releases page](https://github.com/Kamal-Nayan-Kumar/data_security/releases), extract it, and use `export VGET="./vget"`).*
 
 ## 2. Connect to the Cloud Backend
 
@@ -32,14 +29,16 @@ Open your deployed **Vercel** Frontend URL in your browser:
 **https://data-security-frontend-git-main-kamal-nayan-kumars-projects.vercel.app**
 *(or whatever custom domain you configured).*
 
-Search for the package the developer just published (e.g., `my-awesome-app`). You should see it listed with version `1.0.0`!
+Search for the package the developer just published (e.g., `my-awesome-app-177...`). You should see it listed there with its version `1.0.0`!
 
 ## 4. Securely Install the Package
 
-The user needs to run the `install` command using the CLI.
+The user needs to run the `install` command using the CLI. Grab the exact package name from the Vercel dashboard and run this command:
 
 ```bash
-$VGET install my-awesome-app
+export PACKAGE_TO_INSTALL="<paste-package-name-here>"
+
+$VGET install "$PACKAGE_TO_INSTALL"
 ```
 
 **Security Checks that happen automatically on your laptop:**
@@ -52,8 +51,8 @@ $VGET install my-awesome-app
 ## 5. Verify Installation
 
 ```bash
-ls -la ./installed/my-awesome-app/1.0.0
-cat ./installed/my-awesome-app/1.0.0/index.js
+ls -la "./installed/$PACKAGE_TO_INSTALL/1.0.0"
+cat "./installed/$PACKAGE_TO_INSTALL/1.0.0/index.js"
 ```
 
 The file should exist exactly as the developer published it, guaranteeing no man-in-the-middle tampering occurred during download!

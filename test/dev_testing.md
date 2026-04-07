@@ -2,21 +2,18 @@
 
 This guide is for the **Developer** laptop. You will act as the creator of a software package and publish it to the remote secure repository.
 
-## 1. Install the CLI
+## 1. Install the CLI (Binary Release)
 
-If you haven't triggered a GitHub Release yet, you can build the CLI directly from source:
+Download the pre-compiled binary for your operating system from the GitHub Releases page:
+[https://github.com/Kamal-Nayan-Kumar/data_security/releases/latest](https://github.com/Kamal-Nayan-Kumar/data_security/releases/latest)
+
+Extract the downloaded file, open your terminal in that folder, and make it executable:
 
 ```bash
-# Clone your repository
-git clone https://github.com/Kamal-Nayan-Kumar/data_security.git
-cd data_security
-
-# Build the CLI
-cargo build --release -p cli
-export VGET="./target/release/vget"
+# On Mac/Linux (Replace with your actual downloaded file name)
+chmod +x vget-linux-amd64
+export VGET="./vget-linux-amd64"
 ```
-
-*(Alternatively, if you pushed a `v1.0.0` tag to GitHub, download the binary from the [Releases page](https://github.com/Kamal-Nayan-Kumar/data_security/releases), extract it, and use `export VGET="./vget"`).*
 
 ## 2. Connect to the Cloud Backend
 
@@ -27,35 +24,44 @@ export VGET_API_URL="https://data-security-backend.onrender.com"
 ```
 
 ## 3. Setup Identity
-Generate your cryptographic keys and register an account on the live server:
+
+To avoid conflicts with previous tests, we will clear old local keys and use a unique username.
 
 ```bash
-# Generate Ed25519 keypair
+# Clear any old test data from your machine
+rm -rf ~/.vget
+
+# Generate new Ed25519 keypair
 $VGET keygen
 
+# Set a unique username for this test
+export DEV_USER="dev_$(date +%s)"
+
 # Register a standard account on the deployed backend
-$VGET register --username "my_dev_account" --password "secure123"
+$VGET register --username "$DEV_USER" --password "secure123"
 
 # Log in to get your JWT
-$VGET login --username "my_dev_account" --password "secure123"
+$VGET login --username "$DEV_USER" --password "secure123"
 
 # Upgrade to Developer (This uploads your public key to the remote database)
-$VGET dev-register --username "my_dev_account"
+$VGET dev-register --username "$DEV_USER"
 ```
 
 ## 4. Create a Package
 Create some software you want to distribute:
 
 ```bash
-mkdir -p my-awesome-app
-echo 'console.log("Hello World!");' > my-awesome-app/index.js
+export PKG_NAME="my-awesome-app-$(date +%s)"
+
+mkdir -p "$PKG_NAME"
+echo 'console.log("Hello World!");' > "$PKG_NAME/index.js"
 ```
 
 ## 5. Publish
 Publishing will automatically compress the folder, generate a SHA256 checksum, sign the checksum with your local private key, and upload the payload to the remote server.
 
 ```bash
-$VGET publish --path my-awesome-app --version 1.0.0
+$VGET publish --path "$PKG_NAME" --version 1.0.0
 ```
 
-If the backend ML scanner detects no threats, your package is now live! Give your package name to the "User" laptop to test the installation.
+If the backend ML scanner detects no threats, your package is now live! Give your `$PKG_NAME` to the "User" laptop to test the installation.
