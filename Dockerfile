@@ -20,7 +20,6 @@ COPY --from=builder /app/backend/target/release/backend /usr/local/bin/backend
 
 COPY ["other memeber work/", "/app/other member work/"]
 COPY ./backend/migrations/ /app/migrations/
-COPY ./backend/.env /app/.env
 
 RUN pip install --no-cache-dir -r "/app/other member work/requirements.txt"
 
