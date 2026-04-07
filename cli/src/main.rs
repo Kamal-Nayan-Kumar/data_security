@@ -18,7 +18,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tar::Archive;
 use tar::Builder;
 
-const BASE_URL: &str = "http://localhost:8080";
+fn get_base_url() -> String {
+    std::env::var("VGET_API_URL").unwrap_or_else(|_| "http://localhost:8080".to_string())
+}
 
 #[derive(Debug, Deserialize)]
 struct DevRegisterResponse {
@@ -185,7 +187,7 @@ async fn handle_register(username: String, password_flag: Option<String>) {
 
     let client = reqwest::Client::new();
     let resp = match client
-        .post(format!("{BASE_URL}/api/v1/user/register"))
+        .post(format!("{}/api/v1/user/register", get_base_url()))
         .json(&LoginUserReq { username, password })
         .send()
         .await
@@ -234,7 +236,7 @@ async fn handle_login(username: String, password_flag: Option<String>) {
 
     let client = reqwest::Client::new();
     let resp = match client
-        .post(format!("{BASE_URL}/api/v1/user/login"))
+        .post(format!("{}/api/v1/user/login", get_base_url()))
         .json(&LoginUserReq {
             username: username.clone(),
             password,
@@ -322,7 +324,7 @@ async fn handle_dev_register(username_flag: Option<String>) {
 
     let client = reqwest::Client::new();
     let resp = match client
-        .post(format!("{BASE_URL}/api/v1/developer/register"))
+        .post(format!("{}/api/v1/developer/register", get_base_url()))
         .json(&DevRegisterRequest {
             username: username.clone(),
             public_key,
@@ -513,7 +515,7 @@ async fn handle_publish(path: String, version: String) {
 
     let client = reqwest::Client::new();
     let resp = match client
-        .post(format!("{BASE_URL}/api/v1/developer/upload"))
+        .post(format!("{}/api/v1/developer/upload", get_base_url()))
         .bearer_auth(jwt)
         .multipart(form)
         .send()
@@ -543,7 +545,7 @@ async fn handle_publish(path: String, version: String) {
 async fn handle_search(query: String) {
     let client = reqwest::Client::new();
     let resp = match client
-        .get(format!("{BASE_URL}/api/v1/packages/search"))
+        .get(format!("{}/api/v1/packages/search", get_base_url()))
         .query(&[("q", query.as_str())])
         .send()
         .await
@@ -725,8 +727,8 @@ async fn handle_install(name: String) {
 
 async fn fetch_package_detail(client: &reqwest::Client, name: &str) -> Result<PackageDetail, String> {
     let urls = [
-        format!("{BASE_URL}/api/packages/{name}"),
-        format!("{BASE_URL}/api/v1/packages/{name}"),
+        format!("{}/api/packages/{}", get_base_url(), name),
+        format!("{}/api/v1/packages/{}", get_base_url(), name),
     ];
 
     let mut errors = Vec::new();
@@ -764,8 +766,8 @@ async fn download_package_bytes(
     version: &str,
 ) -> Result<Vec<u8>, String> {
     let urls = [
-        format!("{BASE_URL}/api/packages/{name}/{version}/download"),
-        format!("{BASE_URL}/api/v1/packages/{name}/{version}/download"),
+        format!("{}/api/packages/{}/{}/download", get_base_url(), name, version),
+        format!("{}/api/v1/packages/{}/{}/download", get_base_url(), name, version),
     ];
 
     let mut errors = Vec::new();
@@ -1068,7 +1070,7 @@ async fn handle_delete(name: String, remote: bool) {
         };
 
         let client = reqwest::Client::new();
-        let url = format!("{BASE_URL}/api/v1/packages/{}", name);
+        let url = format!("{}/api/v1/packages/{}", get_base_url(), name);
         let resp = match client.delete(&url).bearer_auth(&jwt).send().await {
             Ok(r) => r,
             Err(err) => {
