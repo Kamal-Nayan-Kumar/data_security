@@ -67,3 +67,6 @@ Get-Content ".\installed\$PACKAGE_TO_INSTALL\1.0.0\index.js"
 5. If **either check fails**, the CLI will panic and refuse to extract the package.
 
 The file exists exactly as the developer published it, guaranteeing no man-in-the-middle tampering occurred during download!
+
+> **Note on Windows (.exe):** 
+> Do **not** double-click the `vget-windows-amd64.exe` file! It is a Command-Line Interface (CLI) tool. If you double-click it, a black window will flash for a split second and close immediately because it expects terminal arguments. You must run it from inside your PowerShell terminal using the `.\` or `&` syntax shown above.

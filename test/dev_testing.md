@@ -87,3 +87,6 @@ Set-Content -Path "$PKG_NAME\index.js" -Value 'console.log("Hello World!");'
 ---
 
 **Success!** If the backend ML scanner detects no threats, your package is now live. Give your `$PKG_NAME` to the "User" laptop to test the installation.
+
+> **Note on Windows (.exe):** 
+> Do **not** double-click the `vget-windows-amd64.exe` file! It is a Command-Line Interface (CLI) tool. If you double-click it, a black window will flash for a split second and close immediately because it expects terminal arguments. You must run it from inside your PowerShell terminal using the `.\` or `&` syntax shown above.
