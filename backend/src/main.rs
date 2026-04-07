@@ -38,6 +38,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing::info!("Connected to database");
 
+    tracing::info!("Running database migrations...");
+    sqlx::migrate!("./migrations").run(&pool).await?;
+    tracing::info!("Migrations complete!");
+
     tokio::fs::create_dir_all("uploads").await?;
 
     let state = Arc::new(AppState {
