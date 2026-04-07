@@ -2,66 +2,88 @@
 
 This guide is for the **Developer** laptop. You will act as the creator of a software package and publish it to the remote secure repository.
 
-## 1. Install the CLI (Binary Release)
+## 1. Install the CLI & Connect to Cloud
 
 Download the pre-compiled binary for your operating system from the GitHub Releases page:
 [https://github.com/Kamal-Nayan-Kumar/data_security/releases/latest](https://github.com/Kamal-Nayan-Kumar/data_security/releases/latest)
 
-Extract the downloaded file, open your terminal in that folder, and make it executable:
+Extract the downloaded file and open your terminal in that folder.
 
+### 🍎 Mac / 🐧 Linux (Terminal)
 ```bash
-# On Mac/Linux (Replace with your actual downloaded file name)
-chmod +x vget-linux-amd64
-export VGET="./vget-linux-amd64"
-```
+# Make the binary executable (replace with your downloaded file name)
+chmod +x vget-linux-amd64   # or vget-macos-amd64 / vget-macos-arm64
 
-## 2. Connect to the Cloud Backend
-
-You must tell the CLI to talk to your live deployed backend instead of `localhost`:
-
-```bash
+# Set up aliases and point to the cloud backend
+export VGET="./vget-linux-amd64" 
 export VGET_API_URL="https://data-security-backend.onrender.com"
 ```
 
-## 3. Setup Identity
+### 🪟 Windows (PowerShell)
+```powershell
+# Set up aliases and point to the cloud backend
+$env:VGET=".\vget-windows-amd64.exe"
+$env:VGET_API_URL="https://data-security-backend.onrender.com"
+```
+
+## 2. Setup Identity
 
 To avoid conflicts with previous tests, we will clear old local keys and use a unique username.
 
+### 🍎 Mac / 🐧 Linux (Terminal)
 ```bash
-# Clear any old test data from your machine
+# Clear old keys and generate new Ed25519 keypair
 rm -rf ~/.vget
-
-# Generate new Ed25519 keypair
 $VGET keygen
 
-# Set a unique username for this test
+# Register a unique account and upgrade to Developer
 export DEV_USER="dev_$(date +%s)"
-
-# Register a standard account on the deployed backend
 $VGET register --username "$DEV_USER" --password "secure123"
-
-# Log in to get your JWT
 $VGET login --username "$DEV_USER" --password "secure123"
-
-# Upgrade to Developer (This uploads your public key to the remote database)
 $VGET dev-register --username "$DEV_USER"
 ```
 
-## 4. Create a Package
-Create some software you want to distribute:
+### 🪟 Windows (PowerShell)
+```powershell
+# Clear old keys and generate new Ed25519 keypair
+if (Test-Path ~/.vget) { Remove-Item -Recurse -Force ~/.vget }
+& $env:VGET keygen
 
+# Register a unique account and upgrade to Developer
+$DEV_USER="dev_$([math]::Floor([datetimeOffset]::UtcNow.ToUnixTimeSeconds()))"
+& $env:VGET register --username "$DEV_USER" --password "secure123"
+& $env:VGET login --username "$DEV_USER" --password "secure123"
+& $env:VGET dev-register --username "$DEV_USER"
+```
+
+## 3. Create a Package & Publish
+
+Create some software you want to distribute, then publish it. Publishing will automatically compress the folder, generate a SHA256 checksum, sign the checksum with your private key, and upload the payload to the server.
+
+### 🍎 Mac / 🐧 Linux (Terminal)
 ```bash
 export PKG_NAME="my-awesome-app-$(date +%s)"
 
+# Create a dummy script
 mkdir -p "$PKG_NAME"
 echo 'console.log("Hello World!");' > "$PKG_NAME/index.js"
-```
 
-## 5. Publish
-Publishing will automatically compress the folder, generate a SHA256 checksum, sign the checksum with your local private key, and upload the payload to the remote server.
-
-```bash
+# Publish to the live backend
 $VGET publish --path "$PKG_NAME" --version 1.0.0
 ```
 
-If the backend ML scanner detects no threats, your package is now live! Give your `$PKG_NAME` to the "User" laptop to test the installation.
+### 🪟 Windows (PowerShell)
+```powershell
+$PKG_NAME="my-awesome-app-$([math]::Floor([datetimeOffset]::UtcNow.ToUnixTimeSeconds()))"
+
+# Create a dummy script
+New-Item -ItemType Directory -Force -Path $PKG_NAME
+Set-Content -Path "$PKG_NAME\index.js" -Value 'console.log("Hello World!");'
+
+# Publish to the live backend
+& $env:VGET publish --path "$PKG_NAME" --version 1.0.0
+```
+
+---
+
+**Success!** If the backend ML scanner detects no threats, your package is now live. Give your `$PKG_NAME` to the "User" laptop to test the installation.
