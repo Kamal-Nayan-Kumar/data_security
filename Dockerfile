@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY --from=builder /app/backend/target/release/backend /usr/local/bin/backend
+COPY --from=builder /app/target/release/backend /usr/local/bin/backend
 
 COPY ["other memeber work/", "/app/other member work/"]
 COPY ./backend/migrations/ /app/migrations/
