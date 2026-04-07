@@ -1,3 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # Core — always required
 # (no external deps needed for the base scanner)
 
