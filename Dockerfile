@@ -1,6 +1,7 @@
 FROM rust:1.80-slim as builder
 WORKDIR /app
 COPY ./backend/ /app/backend/
+COPY ./cli/ /app/cli/
 COPY ./Cargo.toml /app/Cargo.toml
 COPY ./Cargo.lock /app/Cargo.lock
 
