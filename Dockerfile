@@ -20,10 +20,10 @@ WORKDIR /app
 
 COPY --from=builder /app/target/release/backend /usr/local/bin/backend
 
-COPY ["other memeber work/", "/app/other member work/"]
+COPY ./ml_scanner/ /app/ml_scanner/
 COPY ./backend/migrations/ /app/migrations/
 
-RUN pip install --no-cache-dir -r "/app/other member work/requirements.txt"
+RUN pip install --no-cache-dir -r "/app/ml_scanner/requirements.txt"
 
 ENV HOST=0.0.0.0
 ENV PORT=8080

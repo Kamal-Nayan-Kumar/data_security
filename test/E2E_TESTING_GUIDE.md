@@ -88,7 +88,7 @@ $VGET publish --path "/tmp/$PKG" --version "1.0.0"
 2. It calculates the **SHA256 checksum** of the archive.
 3. It signs the checksum using your **Ed25519 private key**.
 4. It uploads the file, checksum, and signature to the backend.
-5. **Backend Security Check:** Look at your backend logs (Tab 1). You should see the backend executing the `other member work/main.py` scanner on your upload *before* it saves it to the database!
+5. **Backend Security Check:** Look at your backend logs (Tab 1). You should see the backend executing the `ml_scanner/main.py` scanner on your upload *before* it saves it to the database!
 
 ---
 

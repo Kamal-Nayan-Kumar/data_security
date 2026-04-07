@@ -21,7 +21,7 @@ The backend is a combined Rust Axum server and a Python ML scanner. It requires 
    * **Name**: `vget-backend`
    * **Language**: `Docker`
    * **Branch**: `main`
-   * **Root Directory**: `.` (leave empty or set to root so Docker can access both `backend/` and `other memeber work/`)
+   * **Root Directory**: `.` (leave empty or set to root so Docker can access both `backend/` and `ml_scanner/`)
    * **Docker Command**: Leave default
    * **Dockerfile Path**: `backend/Dockerfile`
 4. **Environment Variables:**

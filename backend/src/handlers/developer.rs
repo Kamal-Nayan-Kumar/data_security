@@ -407,8 +407,8 @@ async fn run_teammate_scanner(
 
 fn find_teammate_scanner() -> Option<PathBuf> {
     let candidates = [
-        PathBuf::from("other memeber work/main.py"),
-        PathBuf::from("../other memeber work/main.py"),
+        PathBuf::from("ml_scanner/main.py"),
+        PathBuf::from("../ml_scanner/main.py"),
     ];
 
     candidates.into_iter().find(|p| p.exists())
