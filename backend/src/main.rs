@@ -6,6 +6,7 @@ use axum::{
     routing::{get, post},
     Extension, Router,
 };
+use tower_http::cors::{Any, CorsLayer};
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -75,7 +76,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             get(handlers::package::download_package),
         )
         .layer(DefaultBodyLimit::max(50 * 1024 * 1024))
-        .layer(Extension(state));
+        .layer(Extension(state))
+        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any));
 
     let listener = TcpListener::bind("0.0.0.0:8080").await?;
     tracing::info!("Server listening on {}", listener.local_addr()?);
