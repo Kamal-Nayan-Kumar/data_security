@@ -56,37 +56,31 @@ $DEV_USER="dev_$([math]::Floor([datetimeOffset]::UtcNow.ToUnixTimeSeconds()))"
 & $env:VGET dev-register --username "$DEV_USER"
 ```
 
-## 3. Create a Package & Publish
+## 3. Test & Publish the Assistant Package
 
-Create some software you want to distribute, then publish it. Publishing will automatically compress the folder, generate a SHA256 checksum, sign the checksum with your private key, and upload the payload to the server.
+Test the software locally first to ensure it works properly, then publish it. Publishing will automatically compress the folder, generate a SHA256 checksum, sign the checksum with your private key, and upload the payload to the server.
 
 ### 🍎 Mac / 🐧 Linux (Terminal)
 ```bash
-export PKG_NAME="my-awesome-app-$(date +%s)"
-
-# Create a dummy script
-mkdir -p "$PKG_NAME"
-echo 'console.log("Hello World!");' > "$PKG_NAME/index.js"
+# Test the assistant locally
+python vget-assistant/test_assistant.py
 
 # Publish to the live backend
-$VGET publish --path "$PKG_NAME" --version 1.0.0
+$VGET publish --path vget-assistant --version 1.0.0
 ```
 
 ### 🪟 Windows (PowerShell)
 ```powershell
-$PKG_NAME="my-awesome-app-$([math]::Floor([datetimeOffset]::UtcNow.ToUnixTimeSeconds()))"
-
-# Create a dummy script
-New-Item -ItemType Directory -Force -Path $PKG_NAME
-Set-Content -Path "$PKG_NAME\index.js" -Value 'console.log("Hello World!");'
+# Test the assistant locally
+python vget-assistant/test_assistant.py
 
 # Publish to the live backend
-& $env:VGET publish --path "$PKG_NAME" --version 1.0.0
+& $env:VGET publish --path vget-assistant --version 1.0.0
 ```
 
 ---
 
-**Success!** If the backend ML scanner detects no threats, your package is now live. Give your `$PKG_NAME` to the "User" laptop to test the installation.
+**Success!** If the backend ML scanner detects no threats, your package is now live. Give the package name `vget-assistant` to the "User" laptop to test the installation.
 
 > **Note on Windows (.exe):** 
 > Do **not** double-click the `vget-windows-amd64.exe` file! It is a Command-Line Interface (CLI) tool. If you double-click it, a black window will flash for a split second and close immediately because it expects terminal arguments. You must run it from inside your PowerShell terminal using the `.\` or `&` syntax shown above.
