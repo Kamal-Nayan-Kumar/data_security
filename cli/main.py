@@ -2,7 +2,9 @@
 import io
 import json
 import os
+import shutil
 import tarfile
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -177,8 +179,13 @@ def keygen() -> None:
 @app.command()
 def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> None:
     package_path = Path(path)
-    if not package_path.exists() or not package_path.is_file():
-        raise typer.BadParameter("--path must point to an existing file")
+    if not package_path.exists():
+        raise typer.BadParameter(f"--path {path} does not exist")
+
+    is_dir = package_path.is_dir()
+    package_name = package_path.name if is_dir else package_path.stem
+    if not is_dir and package_name.endswith(".tar"):
+        package_name = package_name[:-4]
 
     config = _read_config()
     developer_username = config.get("developer_username")
@@ -188,26 +195,37 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
         )
 
     token = _read_token()
-    checksum = sha256_file_hash(package_path)
-    signature = sign_checksum(checksum)
 
-    data = {
-        "developer_username": developer_username,
-        "package_name": package_path.stem,
-        "version": version,
-        "checksum": checksum,
-        "signature": signature,
-    }
+    with tempfile.TemporaryDirectory() as tmpdir:
+        if is_dir:
+            archive_path = Path(tmpdir) / package_name
+            shutil.make_archive(str(archive_path), "gztar", package_path)
+            upload_path = Path(str(archive_path) + ".tar.gz")
+        else:
+            upload_path = package_path
 
-    with package_path.open("rb") as package_file:
-        files = {"file": (package_path.name, package_file, "application/octet-stream")}
-        with httpx.Client(base_url=_api_url(), timeout=120.0) as client:
-            resp = client.post(
-                "/api/v1/developer/upload",
-                data=data,
-                files=files,
-                headers={"Authorization": f"Bearer {token}"},
-            )
+        checksum = sha256_file_hash(upload_path)
+        signature = sign_checksum(checksum)
+
+        data = {
+            "developer_username": developer_username,
+            "package_name": package_name,
+            "version": version,
+            "checksum": checksum,
+            "signature": signature,
+        }
+
+        with upload_path.open("rb") as package_file:
+            files = {
+                "file": (upload_path.name, package_file, "application/octet-stream")
+            }
+            with httpx.Client(base_url=_api_url(), timeout=120.0) as client:
+                resp = client.post(
+                    "/api/v1/developer/upload",
+                    data=data,
+                    files=files,
+                    headers={"Authorization": f"Bearer {token}"},
+                )
 
     try:
         resp.raise_for_status()
