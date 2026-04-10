@@ -13,5 +13,19 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  python_backend:
+    build:
+      context: ./python_backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+asyncpg://vget:vgetpassword@db:5432/vgetdb
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      - db
+
 volumes:
   db_data:

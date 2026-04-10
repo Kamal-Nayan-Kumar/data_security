@@ -31,3 +31,4 @@ frontend/dist/
 
 # Virtual environment
 venv/
+.venv/
