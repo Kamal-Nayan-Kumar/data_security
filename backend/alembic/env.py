@@ -10,6 +10,7 @@ from alembic import context
 
 # Import our models
 import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from db.models import Base
 from db.database import DATABASE_URL
@@ -21,8 +22,9 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+
 def run_migrations_offline() -> None:
-    url = os.environ.get("DATABASE_URL", DATABASE_URL)
+    url = DATABASE_URL
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -42,10 +44,10 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    url = os.environ.get("DATABASE_URL", DATABASE_URL)
+    url = DATABASE_URL
     config_section = config.get_section(config.config_ini_section, {})
     config_section["sqlalchemy.url"] = url
-    
+
     connectable = async_engine_from_config(
         config_section,
         prefix="sqlalchemy.",
