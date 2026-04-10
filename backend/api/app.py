@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy import or_, select
@@ -29,6 +30,13 @@ def create_app(
         yield
 
     app = FastAPI(title="vget-python-backend", lifespan=lifespan)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.state.session_factory = session_factory
     app.state.uploads_dir = uploads_dir or _default_uploads_dir()
 
