@@ -1,0 +1,16 @@
+fastapi
+sqlalchemy
+greenlet
+asyncpg
+passlib[bcrypt]
+PyJWT
+cryptography
+pytest
+pytest-asyncio
+aiosqlite
+pydantic
+pydantic-settings
+uvicorn
+httpx
+python-multipart
+alembic
