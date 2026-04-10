@@ -49,4 +49,6 @@ dist/
 
 # AI Agent Artifacts
 .sisyphus/
-AGENTS.md
+AGENTS.md*.bak
+bad-package/
+data-security-quiz/
