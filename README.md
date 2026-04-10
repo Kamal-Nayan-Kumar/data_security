@@ -6,10 +6,7 @@ vget is a secure, end-to-end package repository and CLI system built with a hard
 
 ## 🌐 Deployed Links
 
-- **Live Frontend (Registry Explorer):** `[Insert Frontend URL Here]`
-- **Live Backend API:** `[Insert Backend URL Here]`
-
-*(Replace the placeholders with your actual Render / Vercel links once fully deployed).*
+- **Live Frontend (Registry Explorer):** `[https://data-security-frontend-iag94wj87-kamal-nayan-kumars-projects.vercel.app/]`
 
 ---
 

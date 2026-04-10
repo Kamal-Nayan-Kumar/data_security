@@ -30,21 +30,11 @@ export default function App() {
           const data = await response.json();
           setPackages(data.packages || []);
         } else {
-          setPackages([
-            { id: '1', name: 'reqwest', description: 'HTTP Client for Rust', version: '0.11.20', developer: 'seanmonstar' },
-            { id: '2', name: 'serde', description: 'Serialization framework', version: '1.0.188', developer: 'dtolnay' },
-            { id: '3', name: 'tokio', description: 'Asynchronous runtime', version: '1.32.0', developer: 'carllerche' },
-            { id: '4', name: 'axum', description: 'Web application framework', version: '0.6.20', developer: 'davidpdrsn' },
-          ]);
+          setPackages([]); // Removed hardcoded dummy fallback
         }
       } catch (err) {
         console.error('Failed to fetch packages:', err);
-        setPackages([
-          { id: '1', name: 'reqwest', description: 'HTTP Client for Rust', version: '0.11.20', developer: 'seanmonstar' },
-          { id: '2', name: 'serde', description: 'Serialization framework', version: '1.0.188', developer: 'dtolnay' },
-          { id: '3', name: 'tokio', description: 'Asynchronous runtime', version: '1.32.0', developer: 'carllerche' },
-          { id: '4', name: 'axum', description: 'Web application framework', version: '0.6.20', developer: 'davidpdrsn' },
-        ]);
+          setPackages([]); // Removed hardcoded dummy fallback
       } finally {
         setIsLoading(false);
       }
