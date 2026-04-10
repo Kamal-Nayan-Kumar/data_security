@@ -83,7 +83,12 @@ def register(
         resp = client.post(
             "/api/v1/user/register", json={"username": username, "password": password}
         )
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except httpx.HTTPError as e:
+        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+        raise typer.Exit(1)
     payload = resp.json()
     token = payload.get("token")
     if token:
@@ -106,7 +111,12 @@ def login(
         resp = client.post(
             "/api/v1/user/login", json={"username": username, "password": password}
         )
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except httpx.HTTPError as e:
+        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+        raise typer.Exit(1)
     token = resp.json().get("token")
     if not token:
         raise typer.BadParameter("Login response did not include a token.")
@@ -133,7 +143,12 @@ def dev_register(username: Optional[str] = typer.Option(None)) -> None:
             "/api/v1/developer/register",
             json={"username": username, "public_key": public_key_hex},
         )
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except httpx.HTTPError as e:
+        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+        raise typer.Exit(1)
     config = _read_config()
     config["developer_username"] = username
     dev_id = resp.json().get("developer_id")
@@ -193,7 +208,12 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
                 headers={"Authorization": f"Bearer {token}"},
             )
 
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except httpx.HTTPError as e:
+        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+        raise typer.Exit(1)
     typer.echo("Package published successfully")
 
 
@@ -201,7 +221,12 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
 def search(query: str) -> None:
     with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
         resp = client.get("/api/v1/packages/search", params={"q": query})
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except httpx.HTTPError as e:
+        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+        raise typer.Exit(1)
     typer.echo(json.dumps(resp.json(), indent=2))
 
 
@@ -209,14 +234,24 @@ def search(query: str) -> None:
 def install(name: str) -> None:
     with httpx.Client(base_url=_api_url(), timeout=60.0) as client:
         metadata_resp = client.get(f"/api/v1/packages/{name}")
-        metadata_resp.raise_for_status()
+        try:
+            metadata_resp.raise_for_status()
+        except httpx.HTTPError as e:
+            err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+            typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+            raise typer.Exit(1)
         metadata = metadata_resp.json()
 
         version_info = _latest_version(metadata["versions"])
         version = version_info["version"]
 
         download_resp = client.get(f"/api/v1/packages/{name}/{version}/download")
-        download_resp.raise_for_status()
+        try:
+            download_resp.raise_for_status()
+        except httpx.HTTPError as e:
+            err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+            typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+            raise typer.Exit(1)
         archive_bytes = download_resp.content
 
     local_checksum = __import__("hashlib").sha256(archive_bytes).hexdigest()
@@ -265,7 +300,12 @@ def delete(name: str, remote: bool = typer.Option(False, "--remote")) -> None:
                 f"/api/v1/packages/{name}",
                 headers={"Authorization": f"Bearer {token}"},
             )
-        resp.raise_for_status()
+        try:
+            resp.raise_for_status()
+        except httpx.HTTPError as e:
+            err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+            typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+            raise typer.Exit(1)
 
     typer.echo(f"Deleted package {name}")
 
