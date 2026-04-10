@@ -3,6 +3,8 @@ import io
 import json
 import os
 import shutil
+import subprocess
+import sys
 import tarfile
 import tempfile
 from pathlib import Path
@@ -193,6 +195,50 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
         raise typer.BadParameter(
             "developer_username missing in ~/.vget/config.json. Run login/dev-register first."
         )
+
+    ml_scanner_dir = Path(__file__).resolve().parent.parent / "ml_scanner"
+    scanner_main = ml_scanner_dir / "main.py"
+
+    if is_dir and scanner_main.exists():
+        typer.secho(
+            "\n🛡️  Running AI Code Checker on package before publication...",
+            fg=typer.colors.CYAN,
+            bold=True,
+        )
+        try:
+            result = subprocess.run(
+                [sys.executable, "main.py", str(package_path.resolve())],
+                cwd=str(ml_scanner_dir),
+                capture_output=True,
+                text=True,
+            )
+            print(result.stdout)
+
+            if "DECISION: BLOCK" in result.stdout:
+                typer.secho(
+                    "❌ Publication blocked! Critical security vulnerabilities detected.",
+                    fg=typer.colors.RED,
+                    bold=True,
+                )
+                raise typer.Exit(code=1)
+            elif "DECISION: WARN" in result.stdout:
+                typer.secho(
+                    "⚠️  Publication blocked! High-risk issues found. Please fix them before publishing.",
+                    fg=typer.colors.RED,
+                    bold=True,
+                )
+                raise typer.Exit(code=1)
+            else:
+                typer.secho(
+                    "✅ Code Check Passed! Proceeding with cryptographic signing...\n",
+                    fg=typer.colors.GREEN,
+                    bold=True,
+                )
+        except Exception as e:
+            typer.secho(
+                f"\n[Warning] ML Scanner execution failed: {e}\n",
+                fg=typer.colors.YELLOW,
+            )
 
     token = _read_token()
 
