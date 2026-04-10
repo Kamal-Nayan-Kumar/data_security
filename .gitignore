@@ -4,7 +4,7 @@
 /cli/target/
 **/*.rs.bk
 
-# Node (if a frontend is added later)
+# Node 
 node_modules/
 
 # Environment Variables
@@ -41,3 +41,7 @@ __pycache__/
 
 # Trashed files
 .trash/
+
+# AI Agent Artifacts
+.sisyphus/
+AGENTS.md
