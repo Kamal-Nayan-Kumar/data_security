@@ -74,11 +74,11 @@ def test_developer_register_and_package_routes(api_client):
 
     list_response = api_client.get("/api/v1/packages")
     assert list_response.status_code == 200
-    assert list_response.json() == []
+    assert list_response.json() == {"packages": []}
 
     search_response = api_client.get("/api/v1/packages/search", params={"q": "demo"})
     assert search_response.status_code == 200
-    assert search_response.json() == []
+    assert search_response.json() == {"packages": []}
 
     details_response = api_client.get("/api/v1/packages/nonexistent")
     assert details_response.status_code == 404
@@ -166,13 +166,13 @@ def test_developer_upload_and_download(api_client, tmp_path):
 
     list_response = api_client.get("/api/v1/packages")
     assert list_response.status_code == 200
-    packages = list_response.json()
+    packages = list_response.json()["packages"]
     assert len(packages) == 1
     assert packages[0]["name"] == "secure-pkg"
 
     search_response = api_client.get("/api/v1/packages/search", params={"q": "secure"})
     assert search_response.status_code == 200
-    assert len(search_response.json()) == 1
+    assert len(search_response.json()["packages"]) == 1
 
     details_response = api_client.get("/api/v1/packages/secure-pkg")
     assert details_response.status_code == 200

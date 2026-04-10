@@ -140,25 +140,37 @@ def create_app(
         return token
 
     @app.get("/api/v1/packages")
-    async def list_packages(db: Annotated[AsyncSession, Depends(get_db)]) -> list[dict]:
-        rows = await db.scalars(select(Package).order_by(Package.name.asc()))
-        return [
-            {
-                "id": str(pkg.id),
-                "name": pkg.name,
-                "developer_id": str(pkg.developer_id),
-                "description": pkg.description,
-            }
-            for pkg in rows.all()
-        ]
+    async def list_packages(db: Annotated[AsyncSession, Depends(get_db)]) -> dict:
+        stmt = (
+            select(Package)
+            .options(selectinload(Package.developer), selectinload(Package.versions))
+            .order_by(Package.name.asc())
+        )
+        rows = await db.scalars(stmt)
+        return {
+            "packages": [
+                {
+                    "id": str(pkg.id),
+                    "name": pkg.name,
+                    "developer": pkg.developer.username if pkg.developer else "",
+                    "description": pkg.description,
+                    "version": pkg.versions[-1].version if pkg.versions else "1.0.0",
+                }
+                for pkg in rows.all()
+            ]
+        }
 
     @app.get("/api/v1/packages/search")
     async def search_packages(
         q: str,
         db: Annotated[AsyncSession, Depends(get_db)],
-    ) -> list[dict]:
+    ) -> dict:
         query = q.strip()
-        stmt = select(Package).order_by(Package.name.asc())
+        stmt = (
+            select(Package)
+            .options(selectinload(Package.developer), selectinload(Package.versions))
+            .order_by(Package.name.asc())
+        )
         if query:
             like_expr = f"%{query}%"
             stmt = stmt.where(
@@ -168,15 +180,18 @@ def create_app(
                 )
             )
         rows = await db.scalars(stmt)
-        return [
-            {
-                "id": str(pkg.id),
-                "name": pkg.name,
-                "developer_id": str(pkg.developer_id),
-                "description": pkg.description,
-            }
-            for pkg in rows.all()
-        ]
+        return {
+            "packages": [
+                {
+                    "id": str(pkg.id),
+                    "name": pkg.name,
+                    "developer": pkg.developer.username if pkg.developer else "",
+                    "description": pkg.description,
+                    "version": pkg.versions[-1].version if pkg.versions else "1.0.0",
+                }
+                for pkg in rows.all()
+            ]
+        }
 
     @app.get("/api/v1/packages/{name}")
     async def get_package(
