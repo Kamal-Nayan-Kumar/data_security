@@ -5,12 +5,12 @@ vget is a secure package repository and CLI system built with a focus on cryptog
 ## Architecture
 
 The system consists of two primary components:
-- **Backend**: Built with Axum, using PostgreSQL (via SQLx) for persistence. It handles package metadata, user authentication (JWT), and storage.
-- **CLI**: A command-line interface built with Clap that performs client-side cryptographic operations, including key generation, package signing, and verification.
+- **Backend**: Built with FastAPI, using PostgreSQL (via SQLAlchemy and asyncpg) for persistence. It handles package metadata, user authentication (JWT), and storage.
+- **CLI**: A command-line interface built with Typer that performs client-side cryptographic operations, including key generation, package signing, and verification.
 
 ## Security Features
 
-vget implements several layers of security to ensure trust and integrity:
+vget implements a dual-layer security model to ensure trust and integrity:
 - **SHA256 Checksums**: Every package version is hashed during publication. The client re-calculates this hash upon download to detect any corruption or tampering.
 - **Ed25519 Signatures**: Developers sign the package checksum using their private key. The client verifies this signature using the developer's public key before extraction.
 - **JWT Authentication**: User sessions are protected using JSON Web Tokens.
@@ -19,50 +19,50 @@ vget implements several layers of security to ensure trust and integrity:
 ## Developer Guide
 
 ### Prerequisites
-- Rust (latest stable)
+- Python 3.10+
 - Docker and Docker Compose
-- `sqlx-cli` (optional, for migrations)
 
 ### Setup
 1. Start the database and storage infrastructure:
    ```bash
    docker compose up -d
    ```
-2. Run migrations:
+2. Create and activate a Python virtual environment:
    ```bash
-   cd backend && sqlx migrate run
+   python -m venv .venv
+   source .venv/bin/activate
    ```
-3. Start the backend server:
+3. Install dependencies:
    ```bash
-   cargo run -p backend
+   pip install -r python_backend/requirements.txt
+   pip install -r python_cli/requirements.txt
+   ```
+4. Start the backend server:
+   ```bash
+   cd python_backend
+   uvicorn api.main:app --reload
    ```
 
-### Build CLI Binary
+### Using the CLI
 
-Build the `vget` binary:
+Run the `vget` Typer CLI (ensure your virtual environment is active):
 
 ```bash
-cargo build --release -p cli
-```
-
-The binary will be available at:
-
-```bash
-target/release/vget
+python -m python_cli.main --help
 ```
 
 ### Publishing Packages
 1. **Generate Keys**: Create your unique Ed25519 identity keys.
    ```bash
-   target/release/vget keygen
+   python -m python_cli.main keygen
    ```
 2. **Register as a Developer**: Link your public key to a username.
    ```bash
-   target/release/vget dev-register --username <your_name>
+   python -m python_cli.main dev-register --username <your_name>
    ```
 3. **Publish**: Sign and upload your package.
    ```bash
-   target/release/vget publish --path <directory_or_file> --version <version>
+   python -m python_cli.main publish --path <directory_or_file> --version <version>
    ```
 
 ## User Guide
@@ -71,19 +71,19 @@ target/release/vget
 Users can register and log in through the CLI:
 ```bash
 # Register a user via CLI
-target/release/vget register --username alice
+python -m python_cli.main register --username alice
 
 # Log in via CLI
-target/release/vget login --username alice
+python -m python_cli.main login --username alice
 ```
 
 ### Finding and Installing Packages
 1. **Search**: Find packages by name or description.
    ```bash
-   target/release/vget search <query>
+   python -m python_cli.main search <query>
    ```
 2. **Install**: Download, verify, and extract a package.
    ```bash
-   target/release/vget install <package_name>
+   python -m python_cli.main install <package_name>
    ```
    The CLI automatically verifies the SHA256 checksum and Ed25519 signature. If verification fails, the package will not be installed.
