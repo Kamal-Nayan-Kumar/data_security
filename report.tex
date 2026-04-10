@@ -1,0 +1,172 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={vget: A Secure Cryptographic Package Registry},
+}
+
+\begin{document}
+
+\title{vget: A Secure Cryptographic Package Registry\\
+\large Course: Data Security and Privacy \quad |\quad Branch: DSAI}
+
+\author{
+\IEEEauthorblockN{Kamal Nayan Kumar}
+\IEEEauthorblockA{\textit{IIIT Dharwad}\\
+23bds026@iiitdwd.ac.in}
+\and
+\IEEEauthorblockN{Rahul Patel}
+\IEEEauthorblockA{\textit{IIIT Dharwad}\\
+23bds047@iiitdwd.ac.in}
+\and
+\IEEEauthorblockN{Ankit Kushwaha}
+\IEEEauthorblockA{\textit{IIIT Dharwad}\\
+23bds008@iiitdwd.ac.in}
+\and
+\IEEEauthorblockN{Vijaypal Singh Rathore}
+\IEEEauthorblockA{\textit{IIIT Dharwad}\\
+23bds067@iiitdwd.ac.in}
+\and
+\linebreak
+\IEEEauthorblockN{Instructor: Dr. Girish Revadigar}
+\IEEEauthorblockA{\textit{Indian Institute of Information Technology, Dharwad}}
+}
+
+\maketitle
+
+\begin{abstract}
+In the modern software development lifecycle, package registries serve as critical infrastructure. However, traditional registries such as npm and PyPI have increasingly become targets for supply chain attacks, primarily because they rely heavily on server-side trust rather than end-to-end cryptographic verification. This project introduces \textbf{vget}, a secure, zero-trust package repository and Command-Line Interface (CLI) ecosystem built with a strict focus on cryptographic verification, data integrity, and origin authenticity. 
+
+Our solution implements a robust security model utilizing SHA-256 for integrity hashing, Ed25519 elliptic-curve digital signatures for origin authentication, and a dedicated Machine Learning-based Code Checker to prevent malware distribution. By completely shifting the cryptographic verification to the client side while enforcing intelligent server-side scanning, \textit{vget} ensures that every package downloaded is mathematically guaranteed to be tamper-free and exactly what the original author intended to publish.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Data Security, Privacy, Cryptography, Package Registry, Ed25519, SHA-256, Supply Chain Security, Static Analysis.
+\end{IEEEkeywords}
+
+\section{Introduction}
+The proliferation of open-source software has led to an overwhelming reliance on central package registries. While these registries facilitate rapid software development, they also represent a single point of failure. Recent high-profile cyber incidents \cite{ohm2020backstabber, ladisa2023taxonomy} highlight the vulnerabilities inherent in implicitly trusting central repositories. Typically, when a developer downloads a package, the primary security mechanism is Transport Layer Security (TLS), which only protects the data in transit. If the central server is compromised, or if a malicious actor successfully uploads a tampered package under a legitimate developer's namespace, the client has no mathematical way to verify the authenticity of the payload.
+
+The \textbf{vget} project addresses this critical flaw by enforcing a zero-trust model alongside active threat detection. The system assumes the central server is an untrusted storage bucket for payload delivery, while simultaneously leveraging the server's computational power to scan for inherently malicious code. The primary objective is to enforce strict cryptographic verification for every single package interaction, fulfilling the core requirements of the Data Security and Privacy curriculum.
+
+\section{Core Security Features}
+Because this project fundamentally addresses Data Security and Privacy, the architecture is entirely built around strict security enforcement mechanisms.
+
+\subsection{Immutable Developer Identity (Public-Private Key Binding)}
+In traditional systems, a leaked password or session cookie allows an attacker to publish a malicious update to a popular package. \textit{vget} eliminates this vector using Public Key Infrastructure (PKI) \cite{samuel2010survivable}. 
+\begin{itemize}
+    \item \textbf{Key Generation:} Developers use the \texttt{vget keygen} command to locally generate an Ed25519 private and public key pair. The private key \textit{never} leaves the developer's machine.
+    \item \textbf{Identity Binding:} When registering, only the public key is sent to the backend. The backend strictly binds the developer's namespace (e.g., \texttt{data-security-quiz}) to this specific public key.
+    \item \textbf{Exclusive Push Access:} For any future code changes or version updates, the uploaded package must be signed by the exact private key that corresponds to the registered public key. If an attacker breaches the developer's web account but lacks their local private key, the backend will mathematically reject the upload. Only the true developer can make code changes.
+\end{itemize}
+
+\subsection{Dual-Layer Cryptography (Data-at-Rest Security)}
+\textit{vget} provides Data-at-Rest verification, meaning the security travels with the file itself.
+\begin{enumerate}
+    \item \textbf{Integrity (SHA-256):} Upon publishing, the CLI compresses the directory and calculates a SHA-256 hash. Even a single flipped bit will drastically alter the hash, immediately failing the integrity check upon installation.
+    \item \textbf{Authenticity (Ed25519):} The developer signs the SHA-256 hash with their local private key using the highly secure Ed25519 signature scheme \cite{bernstein2012high}. During installation, the client fetches the developer's public key, computes the SHA-256 hash of the downloaded file, and verifies the signature. If the signature is invalid, the CLI halts and purges the malicious file before extraction.
+\end{enumerate}
+
+\subsection{Automated Code Checker (ML Scanner)}
+While cryptography guarantees that a package came from a specific developer, it does not guarantee that the developer themselves isn't acting maliciously (or hasn't been coerced). To provide Defense-in-Depth, a major contribution to this project is the \textbf{Automated Code Checker} \cite{sejfia2022practical, duan2021towards}.
+\begin{itemize}
+    \item \textbf{Pre-Publish Interception:} Before an uploaded package is made available on the registry, it is placed in an isolated sandbox.
+    \item \textbf{Heuristic \& ML Analysis:} The Code Checker unpacks the payload and performs static analysis. It utilizes Machine Learning heuristics and pattern matching to scan for known vulnerabilities (CVEs), obfuscated payloads, and highly suspicious operations (e.g., reverse shells, unauthorized \texttt{os.system} calls, or credential harvesting scripts).
+    \item \textbf{Action:} If the Code Checker detects malicious intent, the package publication is permanently rejected, protecting end-users from zero-day supply chain poisoning. This active scanning mechanism ensures the registry remains clean.
+\end{itemize}
+
+\section{System Architecture}
+The system architecture of \textbf{vget} consists of three main components perfectly interacting to provide end-to-end security. 
+
+\subsection{Backend Infrastructure}
+Built with FastAPI and PostgreSQL (utilizing asyncpg and SQLAlchemy), the backend serves as the central directory. It is responsible for storing package metadata, running the Code Checker sandbox, and handling file uploads. It utilizes JSON Web Tokens (JWT) to authenticate both standard users and developers. 
+
+\subsection{Frontend Registry Explorer}
+A React and Vite-based web application provides a modern, user-friendly interface for discovering packages. Users can search for packages, verify publisher details, and view the verified publisher badges. 
+
+\subsection{Client-Side CLI (Typer)}
+The CLI is the core cryptographic engine. Built in Python using the Typer framework, it handles all hashing, signing, and verification. The server dictates nothing; the client verifies everything. 
+
+\section{Implementation Details \& Live Demonstration}
+
+\subsection{Technology Stack}
+\begin{itemize}
+    \item \textbf{Client/Backend Language:} Python 3.10+
+    \item \textbf{Backend Framework:} FastAPI, Uvicorn
+    \item \textbf{Database:} PostgreSQL 15+ with SQLAlchemy and asyncpg
+    \item \textbf{Frontend:} React, Vite, TailwindCSS
+    \item \textbf{Cryptography:} Python \texttt{cryptography} library (Ed25519)
+\end{itemize}
+
+\subsection{Project Demonstration and Links}
+The project has been deployed to cloud infrastructure for live testing and demonstration. (Note: The backend API URL is omitted as it is designed for headless CLI interaction rather than browser navigation).
+\begin{itemize}
+    \item \textbf{Live Frontend URL:} \url{https://data-security-frontend-iag94wj87-kamal-nayan-kumars-projects.vercel.app/}
+    \item \textbf{GitHub Repository:} \url{[Insert GitHub Repo URL Here]}
+\end{itemize}
+
+\subsection{End-to-End Workflow Demonstration}
+The typical workflow demonstrates the seamless integration of security:
+\begin{enumerate}
+    \item \textbf{Developer Key Generation \& Registration:} \\
+    \texttt{vget keygen} \\
+    \texttt{vget dev-register --username kamal}
+    \item \textbf{Publishing a Package:} \\
+    \texttt{vget publish --path data-security-quiz --version 1.0.0} \\
+    \textit{The CLI automatically hashes and signs the package. The server's Code Checker scans it. If safe, it goes live.}
+    \item \textbf{User Installation:} \\
+    \texttt{vget install data-security-quiz} \\
+    \textit{The CLI downloads the payload, verifies the Ed25519 signature locally, and extracts it safely.}
+\end{enumerate}
+
+\section{Key Insights and Differentiators}
+What sets \textit{vget} apart from traditional solutions?
+\begin{enumerate}
+    \item \textbf{Inverted Trust Model:} Traditional registries require you to trust the registry operator. \textit{vget} requires you to trust only the mathematics of elliptic-curve cryptography and the original developer.
+    \item \textbf{Developer Friction Minimization:} Unlike PGP signing which requires complex keychain management, \textit{vget} automates the key generation and signing processes entirely within standard commands.
+\end{enumerate}
+
+\section{Future Scope}
+While the current implementation provides robust cryptographic guarantees, future enhancements could further elevate the platform's security posture:
+\begin{itemize}
+    \item \textbf{Hardware Security Module (HSM) Integration:} Allowing developers to generate and store their Ed25519 private keys on hardware tokens (like YubiKeys) so the keys can never be extracted by malware on the developer's machine.
+    \item \textbf{Key Revocation and Rotation:} Implementing a Web-of-Trust or certificate transparency log to handle compromised developer private keys, allowing secure revocation without breaking existing dependencies.
+\end{itemize}
+
+\section{Conclusion}
+The \textbf{vget} package registry successfully demonstrates the practical implementation of modern cryptographic principles to secure the software supply chain. By combining strict client-side signature verification with an active server-side Automated Code Checker, the system comprehensively protects against man-in-the-middle attacks, server compromises, and the distribution of obfuscated malware. The project fulfills the core principles of the Data Security and Privacy curriculum, offering a scalable, secure, and developer-friendly alternative to traditional package distribution systems.
+
+\begin{thebibliography}{00}
+
+\bibitem{ohm2020backstabber}
+M.~Ohm, H.~Plate, A.~Sykosch, and M.~Meier, ``Backstabber's knife collection: A review of open source software supply chain attacks,'' in \textit{Proceedings of the 17th Conference on Detection of Intrusions and Malware, and Vulnerability Assessment (DIMVA)}. Springer, 2020, pp. 23--43.
+
+\bibitem{samuel2010survivable}
+J.~Samuel, N.~Mathewson, J.~Cappos, and R.~Dingledine, ``Survivable key compromise in software update systems,'' in \textit{Proceedings of the 17th ACM Conference on Computer and Communications Security (CCS)}, 2010, pp. 61--72.
+
+\bibitem{bernstein2012high}
+D.~J.~Bernstein, N.~Duif, T.~Lange, P.~Schwabe, and B.-Y.~Yang, ``High-speed high-security signatures,'' \textit{Journal of Cryptographic Engineering}, vol. 2, no. 2, pp. 77--89, 2012.
+
+\bibitem{sejfia2022practical}
+A.~Sejfia and M.~Sch\"{a}fer, ``Practical automated detection of malicious npm packages,'' in \textit{Proceedings of the 44th International Conference on Software Engineering (ICSE)}. ACM, 2022, pp. 2409--2420.
+
+\bibitem{duan2021towards}
+R.~Duan, O.~Alrawi, R.~P.~Kasturi, R.~Elder, B.~Saltaformaggio, and W.~Lee, ``Towards measuring supply chain attacks on package managers for interpreted languages,'' in \textit{Proceedings of the 28th Network and Distributed System Security Symposium (NDSS)}, 2021.
+
+\bibitem{ladisa2023taxonomy}
+P.~Ladisa, H.~Plate, M.~Martinez, and O.~Barais, ``SoK: Taxonomy of attacks on open-source software supply chains,'' in \textit{Proceedings of the 44th IEEE Symposium on Security and Privacy (S\&P)}. IEEE, 2023, pp. 1509--1526.
+
+\end{thebibliography}
+
+\end{document}
