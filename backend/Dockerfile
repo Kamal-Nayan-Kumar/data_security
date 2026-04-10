@@ -25,4 +25,4 @@ EXPOSE 8000
 
 # Run migrations and start the server
 WORKDIR /app/backend
-CMD ["bash", "-c", "alembic upgrade head && uvicorn api.app:app --host 0.0.0.0 --port 8000"]
+CMD ["bash", "-c", "alembic upgrade head && uvicorn api.app:app --host 0.0.0.0 --port ${PORT:-8000}"]
