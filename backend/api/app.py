@@ -357,3 +357,10 @@ def create_app(
 
 
 app = create_app()
+
+@app.get("/api/v1/admin/delete-dummies")
+async def delete_dummies(db: AsyncSession = Depends(get_db)):
+    await db.execute(text("DELETE FROM package_versions WHERE package_id IN (SELECT id FROM packages WHERE name LIKE '%my-awesome-app%');"))
+    await db.execute(text("DELETE FROM packages WHERE name LIKE '%my-awesome-app%';"))
+    await db.commit()
+    return {"status": "deleted"}
