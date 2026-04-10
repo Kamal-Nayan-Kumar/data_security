@@ -86,7 +86,7 @@ def register(
     try:
         resp.raise_for_status()
     except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     payload = resp.json()
@@ -114,10 +114,11 @@ def login(
     try:
         resp.raise_for_status()
     except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
-    token = resp.json().get("token")
+    data = resp.json()
+    token = data if isinstance(data, str) else data.get("token")
     if not token:
         raise typer.BadParameter("Login response did not include a token.")
     token_file = _token_path()
@@ -146,7 +147,7 @@ def dev_register(username: Optional[str] = typer.Option(None)) -> None:
     try:
         resp.raise_for_status()
     except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     config = _read_config()
@@ -211,7 +212,7 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
     try:
         resp.raise_for_status()
     except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     typer.echo("Package published successfully")
@@ -224,7 +225,7 @@ def search(query: str) -> None:
     try:
         resp.raise_for_status()
     except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     typer.echo(json.dumps(resp.json(), indent=2))
@@ -237,7 +238,9 @@ def install(name: str) -> None:
         try:
             metadata_resp.raise_for_status()
         except httpx.HTTPError as e:
-            err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+            err_msg = (
+                e.response.text if hasattr(e, "response") and e.response else str(e)
+            )
             typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
             raise typer.Exit(1)
         metadata = metadata_resp.json()
@@ -249,7 +252,9 @@ def install(name: str) -> None:
         try:
             download_resp.raise_for_status()
         except httpx.HTTPError as e:
-            err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+            err_msg = (
+                e.response.text if hasattr(e, "response") and e.response else str(e)
+            )
             typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
             raise typer.Exit(1)
         archive_bytes = download_resp.content
@@ -303,7 +308,9 @@ def delete(name: str, remote: bool = typer.Option(False, "--remote")) -> None:
         try:
             resp.raise_for_status()
         except httpx.HTTPError as e:
-            err_msg = e.response.text if hasattr(e, 'response') and e.response else str(e)
+            err_msg = (
+                e.response.text if hasattr(e, "response") and e.response else str(e)
+            )
             typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
             raise typer.Exit(1)
 
