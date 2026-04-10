@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 from pathlib import Path
 from typing import Annotated, Optional
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.responses import FileResponse
@@ -21,13 +22,15 @@ def _default_uploads_dir() -> Path:
 def create_app(
     *, session_factory=AsyncSessionLocal, uploads_dir: Optional[Path] = None
 ) -> FastAPI:
-    app = FastAPI(title="vget-python-backend")
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        app.state.uploads_dir.mkdir(parents=True, exist_ok=True)
+        yield
+
+    app = FastAPI(title="vget-python-backend", lifespan=lifespan)
     app.state.session_factory = session_factory
     app.state.uploads_dir = uploads_dir or _default_uploads_dir()
-
-    @app.on_event("startup")
-    async def startup() -> None:
-        app.state.uploads_dir.mkdir(parents=True, exist_ok=True)
 
     async def get_db() -> AsyncGenerator[AsyncSession, None]:
         async with app.state.session_factory() as session:

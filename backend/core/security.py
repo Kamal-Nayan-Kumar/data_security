@@ -15,7 +15,7 @@ except Exception:
     pass
 
 pwd_context = CryptContext(schemes=["bcrypt"])
-JWT_SECRET = "supersecret"
+JWT_SECRET = "supersecret_minimum_32_characters_long_for_security"
 JWT_ALGORITHM = "HS256"
 
 

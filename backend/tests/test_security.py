@@ -37,10 +37,14 @@ def test_jwt_encode_decode_roundtrip():
 
 def test_jwt_decode_invalid_signature_raises():
     token = encode_jwt({"sub": "alice"})
-    tampered = token[:-1] + ("a" if token[-1] != "a" else "b")
+    # Tamper with the first character of the signature part to guarantee a failure
+    parts = token.split(".")
+    sig = parts[2]
+    tampered_sig = ("a" if sig[0] != "a" else "b") + sig[1:]
+    tampered_token = f"{parts[0]}.{parts[1]}.{tampered_sig}"
 
     with pytest.raises(InvalidTokenError):
-        decode_jwt(tampered)
+        decode_jwt(tampered_token)
 
 
 def test_verify_ed25519_signature_accepts_cli_signature(tmp_path):
