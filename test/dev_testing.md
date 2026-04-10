@@ -84,3 +84,31 @@ python vget-assistant/test_assistant.py
 
 > **Note on Windows (.exe):** 
 > Do **not** double-click the `vget-windows-amd64.exe` file! It is a Command-Line Interface (CLI) tool. If you double-click it, a black window will flash for a split second and close immediately because it expects terminal arguments. You must run it from inside your PowerShell terminal using the `.\` or `&` syntax shown above.
+
+## 4. Run the ML Security Scanner (Optional but Recommended)
+
+Before publishing, it is highly recommended to run the ML Code Checker locally to ensure your code does not contain any security vulnerabilities or obfuscated payloads that would cause the backend to reject your package.
+
+### How to test your package:
+```bash
+# Ensure your virtual environment is active
+source .venv/bin/activate
+
+# Navigate to the ml_scanner directory
+cd ml_scanner
+
+# Run the scanner against your package folder
+python main.py ../vget-assistant
+```
+
+You should see a `SECURITY SCAN REPORT` with a "REVIEW" or "PASS" decision and a low risk score (e.g., < 30).
+
+### How to test a malicious package (Demo):
+We have included a dummy malicious package folder at `test/malicious_test` which contains shell injections and obfuscated base64 payloads to demonstrate how the ML Scanner catches bad actors.
+
+```bash
+# Run the scanner against the malicious demo package
+cd ml_scanner
+python main.py ../test/malicious_test
+```
+You will see it immediately flag `[HIGH] Shell injection risk` and `[MEDIUM] Encoded payload detected`, generating a high risk score and a "WARN" or "REJECT" decision.
