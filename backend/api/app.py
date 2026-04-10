@@ -9,9 +9,9 @@ from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from python_backend.core import security
-from python_backend.db.database import AsyncSessionLocal
-from python_backend.db.models import Developer, Package, PackageVersion, User
+from backend.core import security
+from backend.db.database import AsyncSessionLocal
+from backend.db.models import Developer, Package, PackageVersion, User
 
 
 def _default_uploads_dir() -> Path:

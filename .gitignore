@@ -32,3 +32,12 @@ frontend/dist/
 # Virtual environment
 venv/
 .venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Trashed files
+.trash/

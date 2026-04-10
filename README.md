@@ -34,12 +34,12 @@ vget implements a dual-layer security model to ensure trust and integrity:
    ```
 3. Install dependencies:
    ```bash
-   pip install -r python_backend/requirements.txt
-   pip install -r python_cli/requirements.txt
+   pip install -r backend/requirements.txt
+   pip install -r cli/requirements.txt
    ```
 4. Start the backend server:
    ```bash
-   cd python_backend
+   cd backend
    uvicorn api.main:app --reload
    ```
 
@@ -48,21 +48,21 @@ vget implements a dual-layer security model to ensure trust and integrity:
 Run the `vget` Typer CLI (ensure your virtual environment is active):
 
 ```bash
-python -m python_cli.main --help
+python -m cli.main --help
 ```
 
 ### Publishing Packages
 1. **Generate Keys**: Create your unique Ed25519 identity keys.
    ```bash
-   python -m python_cli.main keygen
+   python -m cli.main keygen
    ```
 2. **Register as a Developer**: Link your public key to a username.
    ```bash
-   python -m python_cli.main dev-register --username <your_name>
+   python -m cli.main dev-register --username <your_name>
    ```
 3. **Publish**: Sign and upload your package.
    ```bash
-   python -m python_cli.main publish --path <directory_or_file> --version <version>
+   python -m cli.main publish --path <directory_or_file> --version <version>
    ```
 
 ## User Guide
@@ -71,19 +71,19 @@ python -m python_cli.main --help
 Users can register and log in through the CLI:
 ```bash
 # Register a user via CLI
-python -m python_cli.main register --username alice
+python -m cli.main register --username alice
 
 # Log in via CLI
-python -m python_cli.main login --username alice
+python -m cli.main login --username alice
 ```
 
 ### Finding and Installing Packages
 1. **Search**: Find packages by name or description.
    ```bash
-   python -m python_cli.main search <query>
+   python -m cli.main search <query>
    ```
 2. **Install**: Download, verify, and extract a package.
    ```bash
-   python -m python_cli.main install <package_name>
+   python -m cli.main install <package_name>
    ```
    The CLI automatically verifies the SHA256 checksum and Ed25519 signature. If verification fails, the package will not be installed.

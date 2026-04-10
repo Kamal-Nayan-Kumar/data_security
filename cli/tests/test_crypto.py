@@ -4,12 +4,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from python_cli.core.crypto import (
+from cli.core.crypto import (
     generate_ed25519_keypair,
     sha256_file_hash,
     sign_checksum,
 )
-from python_backend.core.security import verify_ed25519_signature
+from backend.core.security import verify_ed25519_signature
 
 
 def test_generate_ed25519_keypair_writes_private_key_and_returns_public_hex(tmp_path):

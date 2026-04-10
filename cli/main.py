@@ -10,7 +10,7 @@ import httpx
 import typer
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-from python_cli.core.crypto import (
+from cli.core.crypto import (
     generate_ed25519_keypair,
     sha256_file_hash,
     sign_checksum,

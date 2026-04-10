@@ -9,11 +9,11 @@ vget is a secure package repository and CLI system built with a focus on cryptog
 ## STRUCTURE
 ```
 .
-├── python_backend/   # FastAPI server, package metadata, auth, PostgreSQL (SQLAlchemy/asyncpg)
+├── backend/   # FastAPI server, package metadata, auth, PostgreSQL (SQLAlchemy/asyncpg)
 │   ├── api/          # FastAPI route handlers
 │   ├── core/         # Core business logic and security components
 │   └── db/           # Database models and interactions
-├── python_cli/       # Client-side CLI using Typer
+├── cli/       # Client-side CLI using Typer
 │   ├── core/         # Cryptographic ops, client interactions
 │   └── main.py       # Typer CLI entrypoint
 ├── .venv/            # Python virtual environment
@@ -26,13 +26,13 @@ vget is a secure package repository and CLI system built with a focus on cryptog
 ## WHERE TO LOOK
 | Task | Location | Notes |
 |------|----------|-------|
-| Backend API Logic | `python_backend/api/` | FastAPI route handlers |
-| Client Commands | `python_cli/main.py` | Typer commands (publish, install, keygen) |
-| Database Schemas | `python_backend/db/` | SQLAlchemy models and setup |
-| Dependencies | `python_backend/requirements.txt` & `python_cli/requirements.txt` | Python dependencies |
+| Backend API Logic | `backend/api/` | FastAPI route handlers |
+| Client Commands | `cli/main.py` | Typer commands (publish, install, keygen) |
+| Database Schemas | `backend/db/` | SQLAlchemy models and setup |
+| Dependencies | `backend/requirements.txt` & `cli/requirements.txt` | Python dependencies |
 
 ## CONVENTIONS
-- **Workspace Layout:** Uses `python_backend` and `python_cli` as distinct modules.
+- **Workspace Layout:** Uses `backend` and `cli` as distinct modules.
 - **Database Access:** Uses `SQLAlchemy` and `asyncpg` for asynchronous database queries.
 - **Workflow:** Strictly follows "Oh My OpenAgents" global-project-workflow. Code deletions MUST use `mv` to `.trash/` instead of `rm`.
 - **QA:** All major milestones MUST use `/review-work` (5-agent parallel QA) before Git commits.
@@ -50,14 +50,14 @@ docker compose up -d
 # Virtual Environment Setup
 python -m venv .venv
 source .venv/bin/activate
-pip install -r python_backend/requirements.txt
-pip install -r python_cli/requirements.txt
+pip install -r backend/requirements.txt
+pip install -r cli/requirements.txt
 
 # Build/Run Backend
-cd python_backend && uvicorn api.main:app --reload
+cd backend && uvicorn api.main:app --reload
 
 # Run CLI
-python -m python_cli.main --help
+python -m cli.main --help
 ```
 
 ## NOTES

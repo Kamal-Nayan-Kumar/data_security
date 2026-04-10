@@ -7,14 +7,14 @@ from jwt import InvalidTokenError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from python_backend.core.security import (
+from backend.core.security import (
     decode_jwt,
     encode_jwt,
     hash_password,
     verify_ed25519_signature,
     verify_password,
 )
-from python_cli.core.crypto import generate_ed25519_keypair, sign_checksum
+from cli.core.crypto import generate_ed25519_keypair, sign_checksum
 
 
 def test_password_hash_and_verify():

@@ -8,7 +8,7 @@ from typer.testing import CliRunner
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from python_cli import main as cli_main
+from cli import main as cli_main
 
 
 runner = CliRunner()

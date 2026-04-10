@@ -9,13 +9,13 @@ services:
       POSTGRES_PASSWORD: vgetpassword
       POSTGRES_DB: vgetdb
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  python_backend:
+  backend:
     build:
-      context: ./python_backend
+      context: ./backend
       dockerfile: Dockerfile
     restart: always
     environment:

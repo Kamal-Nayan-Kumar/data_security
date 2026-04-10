@@ -14,7 +14,7 @@ export PYTHONPATH="${PYTHONPATH:-.}"
 export VGET_API_URL="${VGET_API_URL:-http://127.0.0.1:8000}"
 
 echo "Starting FastAPI server on 127.0.0.1:8000"
-python3 -m uvicorn python_backend.api.app:app --host 127.0.0.1 --port 8000 >/tmp/phase6_uvicorn.log 2>&1 &
+python3 -m uvicorn backend.api.app:app --host 127.0.0.1 --port 8000 >/tmp/phase6_uvicorn.log 2>&1 &
 UVICORN_PID=$!
 
 cleanup() {
@@ -43,9 +43,9 @@ else:
 PY
 
 echo "Running CLI keygen"
-python3 python_cli/main.py keygen
+python3 cli/main.py keygen
 
 echo "Running CLI search"
-python3 python_cli/main.py search secure
+python3 cli/main.py search secure
 
 echo "Phase 6 integration script completed"

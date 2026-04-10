@@ -10,10 +10,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-create_app = importlib.import_module("python_backend.api.app").create_app
-security = importlib.import_module("python_backend.core.security")
-Base = importlib.import_module("python_backend.db.models").Base
-from python_cli.core.crypto import generate_ed25519_keypair, sign_checksum
+create_app = importlib.import_module("backend.api.app").create_app
+security = importlib.import_module("backend.core.security")
+Base = importlib.import_module("backend.db.models").Base
+from cli.core.crypto import generate_ed25519_keypair, sign_checksum
 
 
 @pytest.fixture

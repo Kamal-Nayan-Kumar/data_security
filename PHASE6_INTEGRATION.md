@@ -18,20 +18,20 @@ source .env
 ## 3) Install Python dependencies
 
 ```bash
-python3 -m pip install -r python_backend/requirements.txt -r python_cli/requirements.txt
+python3 -m pip install -r backend/requirements.txt -r cli/requirements.txt
 ```
 
 ## 4) Run FastAPI via Uvicorn
 
 ```bash
-PYTHONPATH=. uvicorn python_backend.api.app:app --host 127.0.0.1 --port 8000
+PYTHONPATH=. uvicorn backend.api.app:app --host 127.0.0.1 --port 8000
 ```
 
 ## 5) In a second terminal, run minimal CLI checks
 
 ```bash
-python3 python_cli/main.py keygen
-python3 python_cli/main.py search secure
+python3 cli/main.py keygen
+python3 cli/main.py search secure
 ```
 
 Expected result:
@@ -48,5 +48,5 @@ bash scripts/phase6_integration.sh
 
 ## Known limitation in current codebase
 
-`python_cli/main.py` uses `/api/v1/register` and `/api/v1/login`, while the FastAPI backend currently exposes `/api/v1/user/register` and `/api/v1/user/login`.
+`cli/main.py` uses `/api/v1/register` and `/api/v1/login`, while the FastAPI backend currently exposes `/api/v1/user/register` and `/api/v1/user/login`.
 So `register`/`login` via CLI will fail until endpoint paths are aligned in a later phase.
