@@ -42,6 +42,11 @@ __pycache__/
 # Trashed files
 .trash/
 
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
 # AI Agent Artifacts
 .sisyphus/
 AGENTS.md
