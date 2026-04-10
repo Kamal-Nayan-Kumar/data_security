@@ -3,7 +3,7 @@ name: Release CLI
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*'
 
 jobs:
   build-and-release:
@@ -15,36 +15,39 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
             binary_name: vget
             asset_name: vget-linux-amd64
           - os: macos-latest
-            target: x86_64-apple-darwin
             binary_name: vget
             asset_name: vget-macos-amd64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            binary_name: vget
-            asset_name: vget-macos-arm64
           - os: windows-latest
-            target: x86_64-pc-windows-msvc
             binary_name: vget.exe
             asset_name: vget-windows-amd64.exe
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
-          targets: ${{ matrix.target }}
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f cli/requirements.txt ]; then pip install -r cli/requirements.txt; fi
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+          pip install pyinstaller typer
 
       - name: Build CLI Binary
-        run: cargo build --release -p cli --target ${{ matrix.target }}
+        run: |
+          pyinstaller --onefile cli/main.py --name vget
 
       - name: Rename Binary
+        shell: bash
         run: |
-          mv target/${{ matrix.target }}/release/${{ matrix.binary_name }} ./${{ matrix.asset_name }}
+          mv dist/${{ matrix.binary_name }} ./${{ matrix.asset_name }}
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
