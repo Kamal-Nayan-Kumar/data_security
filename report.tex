@@ -11,42 +11,40 @@
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
-    filecolor=magenta,      
+    filecolor=magenta,
     urlcolor=cyan,
     pdftitle={vget: A Secure Cryptographic Package Registry},
 }
 
 \begin{document}
 
-\title{vget: A Secure Cryptographic Package Registry\\
-\large Course: Data Security and Privacy \quad |\quad Branch: DSAI}
+\title{vget: A Secure Cryptographic Package Registry\\[0.3em]
+\normalsize Course: Data Security and Privacy}
 
 \author{
 \IEEEauthorblockN{Kamal Nayan Kumar}
-\IEEEauthorblockA{\textit{IIIT Dharwad}\\
-23bds026@iiitdwd.ac.in}
+\IEEEauthorblockA{\textit{IIIT Dharwad} \\ \textit{DSAI} \\ 23bds026@iiitdwd.ac.in}
 \and
 \IEEEauthorblockN{Rahul Patel}
-\IEEEauthorblockA{\textit{IIIT Dharwad}\\
-23bds047@iiitdwd.ac.in}
+\IEEEauthorblockA{\textit{IIIT Dharwad} \\ \textit{DSAI} \\ 23bds047@iiitdwd.ac.in}
 \and
 \IEEEauthorblockN{Ankit Kushwaha}
-\IEEEauthorblockA{\textit{IIIT Dharwad}\\
-23bds008@iiitdwd.ac.in}
+\IEEEauthorblockA{\textit{IIIT Dharwad} \\ \textit{DSAI} \\ 23bds008@iiitdwd.ac.in}
 \and
 \IEEEauthorblockN{Vijaypal Singh Rathore}
-\IEEEauthorblockA{\textit{IIIT Dharwad}\\
-23bds067@iiitdwd.ac.in}
+\IEEEauthorblockA{\textit{IIIT Dharwad} \\ \textit{DSAI} \\ 23bds067@iiitdwd.ac.in}
 \and
-\linebreak
-\IEEEauthorblockN{Instructor: Dr. Girish Revadigar}
-\IEEEauthorblockA{\textit{Indian Institute of Information Technology, Dharwad}}
+\IEEEauthorblockN{}
+\IEEEauthorblockA{
+    \textbf{Instructor:} Dr. Girish Revadigar\\
+    \textit{IIIT Dharwad}
+}
 }
 
 \maketitle
 
 \begin{abstract}
-In the modern software development lifecycle, package registries serve as critical infrastructure. However, traditional registries such as npm and PyPI have increasingly become targets for supply chain attacks, primarily because they rely heavily on server-side trust rather than end-to-end cryptographic verification. This project introduces \textbf{vget}, a secure, zero-trust package repository and Command-Line Interface (CLI) ecosystem built with a strict focus on cryptographic verification, data integrity, and origin authenticity. 
+In the modern software development lifecycle, package registries serve as critical infrastructure. However, traditional registries such as npm and PyPI have increasingly become targets for supply chain attacks, primarily because they rely heavily on server-side trust rather than end-to-end cryptographic verification. This project introduces \textbf{vget}, a secure, zero-trust package repository and Command-Line Interface (CLI) ecosystem built with a strict focus on cryptographic verification, data integrity, and origin authenticity.
 
 Our solution implements a robust security model utilizing SHA-256 for integrity hashing, Ed25519 elliptic-curve digital signatures for origin authentication, and a dedicated Machine Learning-based Code Checker to prevent malware distribution. By completely shifting the cryptographic verification to the client side while enforcing intelligent server-side scanning, \textit{vget} ensures that every package downloaded is mathematically guaranteed to be tamper-free and exactly what the original author intended to publish.
 \end{abstract}
@@ -64,7 +62,7 @@ The \textbf{vget} project addresses this critical flaw by enforcing a zero-trust
 Because this project fundamentally addresses Data Security and Privacy, the architecture is entirely built around strict security enforcement mechanisms.
 
 \subsection{Immutable Developer Identity (Public-Private Key Binding)}
-In traditional systems, a leaked password or session cookie allows an attacker to publish a malicious update to a popular package. \textit{vget} eliminates this vector using Public Key Infrastructure (PKI) \cite{samuel2010survivable}. 
+In traditional systems, a leaked password or session cookie allows an attacker to publish a malicious update to a popular package. \textit{vget} eliminates this vector using Public Key Infrastructure (PKI) \cite{samuel2010survivable}.
 \begin{itemize}
     \item \textbf{Key Generation:} Developers use the \texttt{vget keygen} command to locally generate an Ed25519 private and public key pair. The private key \textit{never} leaves the developer's machine.
     \item \textbf{Identity Binding:} When registering, only the public key is sent to the backend. The backend strictly binds the developer's namespace (e.g., \texttt{data-security-quiz}) to this specific public key.
@@ -87,16 +85,16 @@ While cryptography guarantees that a package came from a specific developer, it 
 \end{itemize}
 
 \section{System Architecture}
-The system architecture of \textbf{vget} consists of three main components perfectly interacting to provide end-to-end security. 
+The system architecture of \textbf{vget} consists of three main components perfectly interacting to provide end-to-end security.
 
 \subsection{Backend Infrastructure}
-Built with FastAPI and PostgreSQL (utilizing asyncpg and SQLAlchemy), the backend serves as the central directory. It is responsible for storing package metadata, running the Code Checker sandbox, and handling file uploads. It utilizes JSON Web Tokens (JWT) to authenticate both standard users and developers. 
+Built with FastAPI and PostgreSQL (utilizing asyncpg and SQLAlchemy), the backend serves as the central directory. It is responsible for storing package metadata, running the Code Checker sandbox, and handling file uploads. It utilizes JSON Web Tokens (JWT) to authenticate both standard users and developers.
 
 \subsection{Frontend Registry Explorer}
-A React and Vite-based web application provides a modern, user-friendly interface for discovering packages. Users can search for packages, verify publisher details, and view the verified publisher badges. 
+A React and Vite-based web application provides a modern, user-friendly interface for discovering packages. Users can search for packages, verify publisher details, and view the verified publisher badges.
 
 \subsection{Client-Side CLI (Typer)}
-The CLI is the core cryptographic engine. Built in Python using the Typer framework, it handles all hashing, signing, and verification. The server dictates nothing; the client verifies everything. 
+The CLI is the core cryptographic engine. Built in Python using the Typer framework, it handles all hashing, signing, and verification. The server dictates nothing; the client verifies everything.
 
 \section{Implementation Details \& Live Demonstration}
 
@@ -112,8 +110,8 @@ The CLI is the core cryptographic engine. Built in Python using the Typer framew
 \subsection{Project Demonstration and Links}
 The project has been deployed to cloud infrastructure for live testing and demonstration. (Note: The backend API URL is omitted as it is designed for headless CLI interaction rather than browser navigation).
 \begin{itemize}
-    \item \textbf{Live Frontend URL:} \url{https://data-security-frontend-iag94wj87-kamal-nayan-kumars-projects.vercel.app/}
-    \item \textbf{GitHub Repository:} \url{[Insert GitHub Repo URL Here]}
+    \item \textbf{Live Frontend URL:} \url{https://vget-teal.vercel.app/}
+    \item \textbf{GitHub Repository:} \url{https://github.com/Kamal-Nayan-Kumar/vget/}
 \end{itemize}
 
 \subsection{End-to-End Workflow Demonstration}
