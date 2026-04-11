@@ -69,7 +69,7 @@ export default function App() {
           </div>
           
           <div className="flex items-center gap-4">
-            <a href="https://github.com/vget/vget" target="_blank" rel="noreferrer" className="text-textMuted hover:text-text transition-colors text-sm font-medium">
+            <a href="https://mintlify.wiki/Kamal-Nayan-Kumar/vget" target="_blank" rel="noreferrer" className="text-textMuted hover:text-text transition-colors text-sm font-medium">
               Documentation
             </a>
           </div>
