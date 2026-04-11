@@ -1,4 +1,4 @@
-# 🔐 vget: Zero-Trust Secure Package Registry
+# 🔐 vget: A Secure Cryptographic Package Registry
 **A Data Security & Privacy Project Presentation**
 
 **Team Name:** Codify  
@@ -7,7 +7,7 @@
 ---
 
 ## Slide 1: Title Slide
-**vget: Enforcing Data Security & Privacy in the Software Supply Chain**  
+**vget: A Secure Cryptographic Package Registry**  
 *Applying the CIA Triad, Cryptography, and AI to Package Registries*
 
 - **Presented by:** Team Codify

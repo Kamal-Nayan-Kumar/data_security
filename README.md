@@ -1,4 +1,4 @@
-# 🛡️ vget - Secure Package Registry
+# 🛡️ vget: A Secure Cryptographic Package Registry
 
 vget is a secure, end-to-end package repository and CLI system built with a hardcore focus on cryptographic verification and data integrity. It guarantees that every package downloaded is precisely what the author published—with zero tampering.
 
