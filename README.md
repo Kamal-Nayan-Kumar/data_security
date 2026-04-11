@@ -6,8 +6,8 @@ vget is a secure, end-to-end package repository and CLI system built with a hard
 
 ## 🌐 Deployed Links
 
-- **Live Frontend (Registry Explorer):** `https://vget-teal.vercel.app/`
-- **Official Documentation:** `[https://mintlify.wiki/Kamal-Nayan-Kumar/vget]`
+- **Live Frontend (Registry Explorer):** [https://vget-teal.vercel.app/](https://vget-teal.vercel.app/)
+- **Official Documentation:** [https://mintlify.wiki/Kamal-Nayan-Kumar/vget](https://mintlify.wiki/Kamal-Nayan-Kumar/vget)
 
 ---
 
