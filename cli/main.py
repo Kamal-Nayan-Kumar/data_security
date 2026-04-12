@@ -96,8 +96,8 @@ def register(
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
-    except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
+    except httpx.HTTPStatusError as e:
+        err_msg = e.response.text
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     payload = resp.json()
@@ -130,8 +130,8 @@ def login(
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
-    except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
+    except httpx.HTTPStatusError as e:
+        err_msg = e.response.text
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     data = resp.json()
@@ -169,8 +169,8 @@ def dev_register(username: Optional[str] = typer.Option(None)) -> None:
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
-    except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
+    except httpx.HTTPStatusError as e:
+        err_msg = e.response.text
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     config = _read_config()
@@ -299,10 +299,8 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
                     fg=typer.colors.RED,
                 )
                 raise typer.Exit(1)
-            except httpx.HTTPError as e:
-                err_msg = (
-                    e.response.text if hasattr(e, "response") and e.response else str(e)
-                )
+            except httpx.HTTPStatusError as e:
+                err_msg = e.response.text
                 typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
                 raise typer.Exit(1)
     typer.echo("Package published successfully")
@@ -320,8 +318,8 @@ def search(query: str) -> None:
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
-    except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
+    except httpx.HTTPStatusError as e:
+        err_msg = e.response.text
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
     typer.echo(json.dumps(resp.json(), indent=2))
@@ -347,8 +345,8 @@ def install(name: str) -> None:
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
-    except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
+    except httpx.HTTPStatusError as e:
+        err_msg = e.response.text
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
         raise typer.Exit(1)
 
@@ -406,10 +404,8 @@ def delete(name: str, remote: bool = typer.Option(False, "--remote")) -> None:
                 fg=typer.colors.RED,
             )
             raise typer.Exit(1)
-        except httpx.HTTPError as e:
-            err_msg = (
-                e.response.text if hasattr(e, "response") and e.response else str(e)
-            )
+        except httpx.HTTPStatusError as e:
+            err_msg = e.response.text
             typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
             raise typer.Exit(1)
 
