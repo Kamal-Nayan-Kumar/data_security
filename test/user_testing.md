@@ -32,15 +32,15 @@ Open your deployed **Vercel** Frontend URL in your browser:
 **https://data-security-frontend-git-main-kamal-nayan-kumars-projects.vercel.app**
 *(or whatever custom domain you configured).*
 
-Search for the package the developer just published (e.g., `my-awesome-app-177...`). You should see it listed there with its version `1.0.0`!
+Search for the package the developer just published (e.g., `vget-assistant`) or use our pre-published example `data-security-quiz`. You should see it listed there!
 
 ## 3. Securely Install the Package
 
-Grab the exact package name from the Vercel dashboard and run this command.
+Grab the exact package name from the Vercel dashboard or use the example below, and run this command.
 
 ### 🍎 Mac / 🐧 Linux (Terminal)
 ```bash
-export PACKAGE_TO_INSTALL="<paste-package-name-here>"
+export PACKAGE_TO_INSTALL="data-security-quiz"
 $VGET install "$PACKAGE_TO_INSTALL"
 
 # Check the extracted package contents
@@ -50,7 +50,7 @@ cat "./installed/$PACKAGE_TO_INSTALL/1.0.0/index.js"
 
 ### 🪟 Windows (PowerShell)
 ```powershell
-$PACKAGE_TO_INSTALL="<paste-package-name-here>"
+$PACKAGE_TO_INSTALL="data-security-quiz"
 & $env:VGET install "$PACKAGE_TO_INSTALL"
 
 # Check the extracted package contents

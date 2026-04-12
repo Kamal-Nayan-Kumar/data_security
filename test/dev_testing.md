@@ -62,7 +62,7 @@ Test the software locally first to ensure it works properly, then publish it. Pu
 
 ### 🍎 Mac / 🐧 Linux (Terminal)
 ```bash
-# Test the assistant locally
+# Test the assistant locally (use python3 on Mac/Linux if python is not found)
 python vget-assistant/test_assistant.py
 
 # Publish to the live backend
@@ -71,7 +71,7 @@ $VGET publish --path vget-assistant --version 1.0.0
 
 ### 🪟 Windows (PowerShell)
 ```powershell
-# Test the assistant locally
+# Test the assistant locally (use python3 on Mac/Linux if python is not found)
 python vget-assistant/test_assistant.py
 
 # Publish to the live backend
