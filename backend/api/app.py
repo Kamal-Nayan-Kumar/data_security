@@ -201,6 +201,18 @@ def create_app(
             ]
         }
 
+    @app.delete("/api/v1/packages/{name}")
+    async def delete_package(
+        name: str,
+        db: Annotated[AsyncSession, Depends(get_db)],
+    ) -> dict:
+        pkg = await db.scalar(select(Package).where(Package.name == name))
+        if not pkg:
+            raise HTTPException(status_code=404, detail="package not found")
+        await db.delete(pkg)
+        await db.commit()
+        return {"detail": "package deleted"}
+
     @app.get("/api/v1/packages/{name}")
     async def get_package(
         name: str,
