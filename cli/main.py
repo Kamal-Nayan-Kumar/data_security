@@ -83,12 +83,19 @@ def register(
 ) -> None:
     if not password:
         password = typer.prompt("Password", hide_input=True)
-    with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
-        resp = client.post(
-            "/api/v1/user/register", json={"username": username, "password": password}
-        )
     try:
+        with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
+            resp = client.post(
+                "/api/v1/user/register",
+                json={"username": username, "password": password},
+            )
         resp.raise_for_status()
+    except httpx.RequestError as e:
+        typer.secho(
+            f"Network Error: Could not connect to the server. Please check your internet connection or VGET_API_URL. ({e})",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     except httpx.HTTPError as e:
         err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
@@ -111,12 +118,18 @@ def login(
     config = _read_config()
     config["developer_username"] = username
     _write_config(config)
-    with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
-        resp = client.post(
-            "/api/v1/user/login", json={"username": username, "password": password}
-        )
     try:
+        with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
+            resp = client.post(
+                "/api/v1/user/login", json={"username": username, "password": password}
+            )
         resp.raise_for_status()
+    except httpx.RequestError as e:
+        typer.secho(
+            f"Network Error: Could not connect to the server. Please check your internet connection or VGET_API_URL. ({e})",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     except httpx.HTTPError as e:
         err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
@@ -143,13 +156,19 @@ def dev_register(username: Optional[str] = typer.Option(None)) -> None:
         )
 
     public_key_hex = public_key_path.read_text().strip()
-    with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
-        resp = client.post(
-            "/api/v1/developer/register",
-            json={"username": username, "public_key": public_key_hex},
-        )
     try:
+        with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
+            resp = client.post(
+                "/api/v1/developer/register",
+                json={"username": username, "public_key": public_key_hex},
+            )
         resp.raise_for_status()
+    except httpx.RequestError as e:
+        typer.secho(
+            f"Network Error: Could not connect to the server. Please check your internet connection or VGET_API_URL. ({e})",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     except httpx.HTTPError as e:
         err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
@@ -265,29 +284,42 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
             files = {
                 "file": (upload_path.name, package_file, "application/octet-stream")
             }
-            with httpx.Client(base_url=_api_url(), timeout=120.0) as client:
-                resp = client.post(
-                    "/api/v1/developer/upload",
-                    data=data,
-                    files=files,
-                    headers={"Authorization": f"Bearer {token}"},
+            try:
+                with httpx.Client(base_url=_api_url(), timeout=120.0) as client:
+                    resp = client.post(
+                        "/api/v1/developer/upload",
+                        data=data,
+                        files=files,
+                        headers={"Authorization": f"Bearer {token}"},
+                    )
+                resp.raise_for_status()
+            except httpx.RequestError as e:
+                typer.secho(
+                    f"Network Error: Could not connect to the server. Please check your internet connection or VGET_API_URL. ({e})",
+                    fg=typer.colors.RED,
                 )
-
-    try:
-        resp.raise_for_status()
-    except httpx.HTTPError as e:
-        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
-        typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
-        raise typer.Exit(1)
+                raise typer.Exit(1)
+            except httpx.HTTPError as e:
+                err_msg = (
+                    e.response.text if hasattr(e, "response") and e.response else str(e)
+                )
+                typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+                raise typer.Exit(1)
     typer.echo("Package published successfully")
 
 
 @app.command()
 def search(query: str) -> None:
-    with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
-        resp = client.get("/api/v1/packages/search", params={"q": query})
     try:
+        with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
+            resp = client.get("/api/v1/packages/search", params={"q": query})
         resp.raise_for_status()
+    except httpx.RequestError as e:
+        typer.secho(
+            f"Network Error: Could not connect to the server. Please check your internet connection or VGET_API_URL. ({e})",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
     except httpx.HTTPError as e:
         err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
         typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
@@ -297,31 +329,28 @@ def search(query: str) -> None:
 
 @app.command()
 def install(name: str) -> None:
-    with httpx.Client(base_url=_api_url(), timeout=60.0) as client:
-        metadata_resp = client.get(f"/api/v1/packages/{name}")
-        try:
+    try:
+        with httpx.Client(base_url=_api_url(), timeout=60.0) as client:
+            metadata_resp = client.get(f"/api/v1/packages/{name}")
             metadata_resp.raise_for_status()
-        except httpx.HTTPError as e:
-            err_msg = (
-                e.response.text if hasattr(e, "response") and e.response else str(e)
-            )
-            typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
-            raise typer.Exit(1)
-        metadata = metadata_resp.json()
+            metadata = metadata_resp.json()
 
-        version_info = _latest_version(metadata["versions"])
-        version = version_info["version"]
+            version_info = _latest_version(metadata["versions"])
+            version = version_info["version"]
 
-        download_resp = client.get(f"/api/v1/packages/{name}/{version}/download")
-        try:
+            download_resp = client.get(f"/api/v1/packages/{name}/{version}/download")
             download_resp.raise_for_status()
-        except httpx.HTTPError as e:
-            err_msg = (
-                e.response.text if hasattr(e, "response") and e.response else str(e)
-            )
-            typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
-            raise typer.Exit(1)
-        archive_bytes = download_resp.content
+            archive_bytes = download_resp.content
+    except httpx.RequestError as e:
+        typer.secho(
+            f"Network Error: Could not connect to the server. Please check your internet connection or VGET_API_URL. ({e})",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
+    except httpx.HTTPError as e:
+        err_msg = e.response.text if hasattr(e, "response") and e.response else str(e)
+        typer.secho(f"Error: {err_msg}", fg=typer.colors.RED)
+        raise typer.Exit(1)
 
     local_checksum = __import__("hashlib").sha256(archive_bytes).hexdigest()
     if local_checksum != version_info["checksum"]:
@@ -364,13 +393,19 @@ def delete(name: str, remote: bool = typer.Option(False, "--remote")) -> None:
 
     if remote:
         token = _read_token()
-        with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
-            resp = client.delete(
-                f"/api/v1/packages/{name}",
-                headers={"Authorization": f"Bearer {token}"},
-            )
         try:
+            with httpx.Client(base_url=_api_url(), timeout=30.0) as client:
+                resp = client.delete(
+                    f"/api/v1/packages/{name}",
+                    headers={"Authorization": f"Bearer {token}"},
+                )
             resp.raise_for_status()
+        except httpx.RequestError as e:
+            typer.secho(
+                f"Network Error: Could not connect to the server. Please check your internet connection or VGET_API_URL. ({e})",
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
         except httpx.HTTPError as e:
             err_msg = (
                 e.response.text if hasattr(e, "response") and e.response else str(e)
