@@ -27,7 +27,8 @@ async def test_database_models_insert_and_select():
             version="1.0.0",
             checksum="abc123",
             signature="sig456",
-            file_path="/tmp/sample-pkg-1.0.0.tar.gz",
+            file_path=None,
+            file_data=b"fake-tar-gz-bytes",
         )
 
         session.add_all([user, developer, package, package_version])

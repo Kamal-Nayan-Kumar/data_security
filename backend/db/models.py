@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import ForeignKey, LargeBinary, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -55,6 +55,7 @@ class PackageVersion(Base):
     version: Mapped[str] = mapped_column(String(64), nullable=False)
     checksum: Mapped[str] = mapped_column(Text, nullable=False)
     signature: Mapped[str] = mapped_column(Text, nullable=False)
-    file_path: Mapped[str] = mapped_column(Text, nullable=False)
+    file_path: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    file_data: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True)
 
     package: Mapped["Package"] = relationship(back_populates="versions")
