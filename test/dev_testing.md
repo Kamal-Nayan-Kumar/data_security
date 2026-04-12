@@ -16,14 +16,14 @@ chmod +x vget-linux-amd64   # or vget-macos-amd64 / vget-macos-arm64
 
 # Set up aliases and point to the cloud backend
 export VGET="./vget-linux-amd64" 
-export VGET_API_URL="https://data-security-backend.onrender.com"
+export VGET_API_URL="https://vget-backend.onrender.com"
 ```
 
 ### 🪟 Windows (PowerShell)
 ```powershell
 # Set up aliases and point to the cloud backend
 $env:VGET=".\vget-windows-amd64.exe"
-$env:VGET_API_URL="https://data-security-backend.onrender.com"
+$env:VGET_API_URL="https://vget-backend.onrender.com"
 ```
 
 ## 2. Setup Identity
