@@ -222,7 +222,7 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
     ml_scanner_dir = Path(__file__).resolve().parent.parent / "ml_scanner"
     scanner_main = ml_scanner_dir / "main.py"
 
-    if is_dir and scanner_main.exists():
+    if scanner_main.exists():
         typer.secho(
             "\n🛡️  Running AI Code Checker on package before publication...",
             fg=typer.colors.CYAN,
@@ -251,6 +251,13 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
                     bold=True,
                 )
                 raise typer.Exit(code=1)
+            elif result.returncode != 0:
+                 typer.secho(
+                    f"❌ Security scan failed with exit code {result.returncode}. Aborting publication.",
+                    fg=typer.colors.RED,
+                    bold=True,
+                )
+                 raise typer.Exit(code=1)
             else:
                 typer.secho(
                     "✅ Code Check Passed! Proceeding with cryptographic signing...\n",
@@ -258,10 +265,14 @@ def publish(path: str = typer.Option(...), version: str = typer.Option(...)) -> 
                     bold=True,
                 )
         except Exception as e:
+            if isinstance(e, typer.Exit):
+                raise e
             typer.secho(
-                f"\n[Warning] ML Scanner execution failed: {e}\n",
-                fg=typer.colors.YELLOW,
+                f"\n❌ [Critical] Security scan execution failed: {e}\nAborting publication to ensure safety.",
+                fg=typer.colors.RED,
+                bold=True,
             )
+            raise typer.Exit(code=1)
 
     token = _read_token()
 

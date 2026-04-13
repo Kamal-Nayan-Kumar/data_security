@@ -54,9 +54,16 @@ def run_scan(directory: str, output_json: bool = False, save_report: bool = Fals
         print(RED(f"Error: '{directory}' does not exist."))
         sys.exit(1)
 
-    files = get_all_files(directory)
+    if os.path.isfile(directory):
+        files = [directory]
+    else:
+        files = get_all_files(directory)
+
     if not files:
-        print(YELLOW("No scannable files found in the given directory."))
+        if os.path.isdir(directory):
+            print(YELLOW("No scannable files found in the given directory."))
+        else:
+            print(YELLOW(f"File '{directory}' has an unsupported extension or is not scannable."))
         sys.exit(0)
 
     print(BOLD(f"\n🔍  Scanning {len(files)} file(s) in: {directory}\n"))
